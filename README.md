@@ -4,6 +4,10 @@
 
 Experience the next generation of React Native performance with direct JSI bindings, zero bridge overhead, and beautiful native browser experiences on both iOS and Android.
 
+<div align="center">
+  <img src="./app.gif" alt="InAppBrowser Nitro Demo" width="300" />
+</div>
+
 ## ✨ Why Nitro Modules?
 
 ### 🏎️ **Unmatched Performance**
@@ -60,25 +64,13 @@ Experience the next generation of React Native performance with direct JSI bindi
 npm install react-native-inappbrowser-nitro react-native-nitro-modules
 ```
 
-> **Note**: `react-native-nitro-modules` is required as this library leverages the powerful Nitro framework.
-
-### iOS Setup
-
-Add to your `ios/Podfile`:
-
-```ruby
-pod 'InAppBrowserNitro', :path => '../node_modules/react-native-inappbrowser-nitro'
-```
-
-Then run:
+or
 
 ```sh
-cd ios && pod install
+yarn add react-native-inappbrowser-nitro react-native-nitro-modules
 ```
 
-### Android Setup
-
-No additional setup required - uses autolinking magic ✨
+> **Note**: `react-native-nitro-modules` is required as this library leverages the powerful Nitro framework.
 
 ## 🚀 Quick Start
 
