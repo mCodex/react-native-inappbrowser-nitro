@@ -1,7 +1,7 @@
 {
   "name": "react-native-inappbrowser-nitro",
-  "version": "0.1.0",
-  "description": "...",
+  "version": "1.0.0",
+  "description": "🚀 Lightning-fast in-app browser for React Native powered by Nitro Modules. Direct JSI bindings for native performance with Safari View Controller (iOS) & Chrome Custom Tabs (Android). Zero bridge overhead, TypeScript-first, with React hooks support.",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
