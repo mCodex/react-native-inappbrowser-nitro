@@ -77,28 +77,27 @@ public class InAppBrowserNitroImpl: HybridInAppBrowserNitroSpec {
             }
         }
         
-        if let modalPresentationStyle = options?.modalPresentationStyle {
-            safariViewController?.modalPresentationStyle = getPresentationStyle(from: modalPresentationStyle)
+        // Handle presentation and transition styles, ensuring partialCurl uses fullScreen
+        if let transitionStyle = options?.modalTransitionStyle, transitionStyle == .partialCurl {
+            safariViewController?.modalPresentationStyle = .fullScreen
+        } else if let presentationStyle = options?.modalPresentationStyle {
+            safariViewController?.modalPresentationStyle = getPresentationStyle(from: presentationStyle)
         }
-        
-        if let modalTransitionStyle = options?.modalTransitionStyle {
-            safariViewController?.modalTransitionStyle = getTransitionStyle(from: modalTransitionStyle)
+        if let transitionStyle = options?.modalTransitionStyle {
+            safariViewController?.modalTransitionStyle = getTransitionStyle(from: transitionStyle)
         }
         
         guard let presentingViewController = getRootViewController() else {
             return InAppBrowserResult(type: .dismiss, url: nil, message: "No presenting view controller found")
         }
         
-        return await withCheckedContinuation { continuation in
-            let delegate = SafariViewControllerDelegate { result in
-                continuation.resume(returning: result)
-            }
-            
-            safariViewController?.delegate = delegate
-            
-            let animated = options?.animated ?? true
-            presentingViewController.present(safariViewController!, animated: animated, completion: nil)
-        }
+        // Present the in-app browser and return immediately
+        let animated = options?.animated ?? true
+
+        presentingViewController.present(safariViewController!, animated: animated, completion: nil)
+        
+        // Immediately resolve as success; dismissal events can be handled via close()
+        return InAppBrowserResult(type: .success, url: nil, message: nil)
     }
     
     @MainActor

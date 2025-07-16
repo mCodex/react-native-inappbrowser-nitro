@@ -176,6 +176,14 @@ const authenticateUser = async () => {
 };
 ```
 
+## ⚠️ Platform Differences
+
+- **`isLoading` behavior**  
+  On Android, the `open()` promise resolves immediately after launching Chrome Custom Tabs, so the React hook’s `isLoading` toggles off right away. On iOS we updated `open()` to resolve immediately after presenting SafariViewController (instead of waiting for user dismissal), matching Android behavior.
+
+- **`partialCurl` transition**  
+  The iOS `modalTransitionStyle` value `partialCurl` is only supported when paired with a `fullScreen` presentation. If you specify `partialCurl`, the library now forces `modalPresentationStyle` to `fullScreen` under the hood to prevent UIKit crashes with `overFullScreen`.
+
 ## 📖 API Reference
 
 ### Core Methods

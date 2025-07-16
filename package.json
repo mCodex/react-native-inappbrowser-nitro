@@ -3,9 +3,11 @@
   "version": "1.1.0",
   "description": "🚀 Lightning-fast in-app browser for React Native powered by Nitro Modules. Direct JSI bindings for native performance with Safari View Controller (iOS) & Chrome Custom Tabs (Android). Zero bridge overhead, TypeScript-first, with React hooks support.",
   "main": "./lib/module/index.js",
+  "react-native": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
     ".": {
+      "react-native": "./lib/module/index.js",
       "source": "./src/index.tsx",
       "types": "./lib/typescript/src/index.d.ts",
       "default": "./lib/module/index.js"
@@ -40,6 +42,8 @@
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
+    "postinstall": "bob build",
+    "prepublishOnly": "bob build",
     "nitrogen": "nitro-codegen",
     "release": "release-it --only-version"
   },
