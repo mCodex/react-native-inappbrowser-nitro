@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { InAppBrowser } from '../index';
+import { InAppBrowser } from '../InAppBrowserCore';
 import type {
   InAppBrowserOptions,
   InAppBrowserResult,
