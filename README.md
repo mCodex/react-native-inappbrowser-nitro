@@ -72,6 +72,27 @@ yarn add react-native-inappbrowser-nitro react-native-nitro-modules
 
 > **Note**: `react-native-nitro-modules` is required as this library leverages the powerful Nitro framework.
 
+
+## 📦 Linking
+
+### iOS
+
+For iOS, the library uses CocoaPods for linking:
+
+1. Navigate to your iOS project directory:
+   ```sh
+   cd ios
+   ```
+
+2. Install pods:
+   ```sh
+   pod install
+   ```
+
+### Android
+
+For Android, the library is automatically linked via Gradle.
+
 ## 🚀 Quick Start
 
 ### Class-based API (Imperative)
