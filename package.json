@@ -7,9 +7,9 @@
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
     ".": {
-      "source": "./src/index.tsx",
-      "types": "./lib/typescript/src/index.d.ts",
-      "default": "./lib/module/index.js"
+      "import": "./lib/module/index.js",
+      "require": "./lib/module/index.js",
+      "types": "./lib/typescript/src/index.d.ts"
     },
     "./package.json": "./package.json"
   },
