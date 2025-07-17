@@ -103,6 +103,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Set ANDROID_HOME env var
+        run: echo "ANDROID_HOME=/usr/local/share/android/sdk" >> $GITHUB_ENV
+
+      - name: Create local.properties for Android SDK
+        run: echo "sdk.dir=$ANDROID_HOME" > example/android/local.properties
+
       - name: Build example for Android
         env:
           JAVA_OPTS: "-XX:MaxHeapSize=6g"
