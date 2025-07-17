@@ -85,8 +85,8 @@
     "react-native": "0.80.1",
     "react-native-builder-bob": "^0.40.12",
     "react-native-nitro-modules": "^0.26.3",
-    "release-it": "^19.0.3",
-    "turbo": "^2.5.4",
+    "release-it": "^19.0.4",
+    "turbo": "^2.5.5",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {

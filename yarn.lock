@@ -1972,7 +1972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/core@npm:^10.1.13, @inquirer/core@npm:^10.1.14":
+"@inquirer/core@npm:^10.1.14":
   version: 10.1.14
   resolution: "@inquirer/core@npm:10.1.14"
   dependencies:
@@ -2078,7 +2078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/prompts@npm:^7.5.3":
+"@inquirer/prompts@npm:^7.6.0":
   version: 7.6.0
   resolution: "@inquirer/prompts@npm:7.6.0"
   dependencies:
@@ -2833,6 +2833,62 @@ __metadata:
   dependencies:
     "@octokit/openapi-types": ^25.1.0
   checksum: 0513520e26dc5395c3b3b407568151d32be1f51bedb151f5b294cadc72dc3fe2d0dbbccad96f01dc80d26247b4aed3358de0ce31ad3c013eb22b96e6234feeb5
+  languageName: node
+  linkType: hard
+
+"@oxlint/darwin-arm64@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@oxlint/darwin-arm64@npm:1.7.0"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxlint/darwin-x64@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@oxlint/darwin-x64@npm:1.7.0"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-arm64-gnu@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@oxlint/linux-arm64-gnu@npm:1.7.0"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-arm64-musl@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@oxlint/linux-arm64-musl@npm:1.7.0"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-x64-gnu@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@oxlint/linux-x64-gnu@npm:1.7.0"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-x64-musl@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@oxlint/linux-x64-musl@npm:1.7.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxlint/win32-arm64@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@oxlint/win32-arm64@npm:1.7.0"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxlint/win32-x64@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@oxlint/win32-x64@npm:1.7.0"
+  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -4686,28 +4742,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"c12@npm:3.0.4":
-  version: 3.0.4
-  resolution: "c12@npm:3.0.4"
+"c12@npm:3.1.0":
+  version: 3.1.0
+  resolution: "c12@npm:3.1.0"
   dependencies:
     chokidar: ^4.0.3
     confbox: ^0.2.2
     defu: ^6.1.4
-    dotenv: ^16.5.0
-    exsolve: ^1.0.5
+    dotenv: ^16.6.1
+    exsolve: ^1.0.7
     giget: ^2.0.0
     jiti: ^2.4.2
     ohash: ^2.0.11
     pathe: ^2.0.3
     perfect-debounce: ^1.0.0
-    pkg-types: ^2.1.0
+    pkg-types: ^2.2.0
     rc9: ^2.1.2
   peerDependencies:
     magicast: ^0.3.5
   peerDependenciesMeta:
     magicast:
       optional: true
-  checksum: 7099125e7ee87814f7730914fb6ed80ebce5fb015422de6100877008ab0d147a9b48d0f0ca424574aa3b78737c4c06909d8bd5f437e89699bd398b1ae9f43452
+  checksum: 17662a910645cec7cff6624472b1bcb8fecd9c7274dc44fa06099232facf6bd55ad933dcc599419a5dadb897dcba805c538e229f486bff94c5991a97fa139fc6
   languageName: node
   linkType: hard
 
@@ -4905,7 +4961,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ci-info@npm:^4.2.0":
+"ci-info@npm:^4.2.0, ci-info@npm:^4.3.0":
   version: 4.3.0
   resolution: "ci-info@npm:4.3.0"
   checksum: 77a851ec826e1fbcd993e0e3ef402e6a5e499c733c475af056b7808dea9c9ede53e560ed433020489a8efea2d824fd68ca203446c9988a0bac8475210b0d4491
@@ -5736,7 +5792,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.5.0":
+"dotenv@npm:^16.6.1":
   version: 16.6.1
   resolution: "dotenv@npm:16.6.1"
   checksum: e8bd63c9a37f57934f7938a9cf35de698097fadf980cb6edb61d33b3e424ceccfe4d10f37130b904a973b9038627c2646a3365a904b4406514ea94d7f1816b69
@@ -6478,7 +6534,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"exsolve@npm:^1.0.5, exsolve@npm:^1.0.7":
+"exsolve@npm:^1.0.7":
   version: 1.0.7
   resolution: "exsolve@npm:1.0.7"
   checksum: 3adce048e4b1b08580aaabf38c7f92f78e1a662a1776fc02d7e9500d5ce4a30cd3f8e62206768821aa2c3bc2411a699146ebc5710ccc3d46e91199dbfff89f54
@@ -7425,23 +7481,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inquirer@npm:12.6.3":
-  version: 12.6.3
-  resolution: "inquirer@npm:12.6.3"
+"inquirer@npm:12.7.0":
+  version: 12.7.0
+  resolution: "inquirer@npm:12.7.0"
   dependencies:
-    "@inquirer/core": ^10.1.13
-    "@inquirer/prompts": ^7.5.3
+    "@inquirer/core": ^10.1.14
+    "@inquirer/prompts": ^7.6.0
     "@inquirer/type": ^3.0.7
     ansi-escapes: ^4.3.2
     mute-stream: ^2.0.0
-    run-async: ^3.0.0
+    run-async: ^4.0.4
     rxjs: ^7.8.2
   peerDependencies:
     "@types/node": ">=18"
   peerDependenciesMeta:
     "@types/node":
       optional: true
-  checksum: f1277c4163569f283c27d363921eef2a752acdfd3d20b030f2cfa4914e2327d807603c42606798beb868f3b90b2628ace419527ce580ea0bf7c46b3e1f0c2e9d
+  checksum: 6abc35507c038ab1b797204b0e9462c057ed52a4f323d600d3df6ca0366a04ca6e99d250d5c1cf9cf862fd9516809f9a403d3a437bf376f24bbe64842e79d38d
   languageName: node
   linkType: hard
 
@@ -8937,13 +8993,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.get@npm:4.4.2":
-  version: 4.4.2
-  resolution: "lodash.get@npm:4.4.2"
-  checksum: e403047ddb03181c9d0e92df9556570e2b67e0f0a930fcbbbd779370972368f5568e914f913e93f3b08f6d492abc71e14d4e9b7a18916c31fa04bd2306efe545
-  languageName: node
-  linkType: hard
-
 "lodash.isplainobject@npm:^4.0.6":
   version: 4.0.6
   resolution: "lodash.isplainobject@npm:4.0.6"
@@ -9997,15 +10046,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"open@npm:10.1.2":
-  version: 10.1.2
-  resolution: "open@npm:10.1.2"
+"open@npm:10.2.0":
+  version: 10.2.0
+  resolution: "open@npm:10.2.0"
   dependencies:
     default-browser: ^5.2.1
     define-lazy-prop: ^3.0.0
     is-inside-container: ^1.0.0
-    is-wsl: ^3.1.0
-  checksum: cb40d9786e8c679a1c647c62ad3642bbf1a8cc986c3ec970e99ed13d279c93328ea46bf756db64ea465d2d707815d4e792e7ba906830c3439cc8577cdefb8610
+    wsl-utils: ^0.1.0
+  checksum: 64e2e1fb1dc5ab82af06c990467237b8fd349b1b9ecc6324d12df337a005d039cec11f758abea148be68878ccd616977005682c48ef3c5c7ba48bd3e5d6a3dbb
   languageName: node
   linkType: hard
 
@@ -10101,6 +10150,42 @@ __metadata:
     object-keys: ^1.1.1
     safe-push-apply: ^1.0.0
   checksum: cc9dd7d85c4ccfbe8109fce307d581ac7ede7b26de892b537873fbce2dc6a206d89aea0630dbb98e47ce0873517cefeaa7be15fcf94aaf4764a3b34b474a5b61
+  languageName: node
+  linkType: hard
+
+"oxlint@npm:^1.2.0":
+  version: 1.7.0
+  resolution: "oxlint@npm:1.7.0"
+  dependencies:
+    "@oxlint/darwin-arm64": 1.7.0
+    "@oxlint/darwin-x64": 1.7.0
+    "@oxlint/linux-arm64-gnu": 1.7.0
+    "@oxlint/linux-arm64-musl": 1.7.0
+    "@oxlint/linux-x64-gnu": 1.7.0
+    "@oxlint/linux-x64-musl": 1.7.0
+    "@oxlint/win32-arm64": 1.7.0
+    "@oxlint/win32-x64": 1.7.0
+  dependenciesMeta:
+    "@oxlint/darwin-arm64":
+      optional: true
+    "@oxlint/darwin-x64":
+      optional: true
+    "@oxlint/linux-arm64-gnu":
+      optional: true
+    "@oxlint/linux-arm64-musl":
+      optional: true
+    "@oxlint/linux-x64-gnu":
+      optional: true
+    "@oxlint/linux-x64-musl":
+      optional: true
+    "@oxlint/win32-arm64":
+      optional: true
+    "@oxlint/win32-x64":
+      optional: true
+  bin:
+    oxc_language_server: bin/oxc_language_server
+    oxlint: bin/oxlint
+  checksum: a309767df6b93e4580e7cf44b15bb5e2f3da6efdb0d22a0ee50cde60a6de4b7ee8bb8a84cc28594284cf2c44e8e0d51d15fde7e7afea138136ab1edfa575b01e
   languageName: node
   linkType: hard
 
@@ -10406,7 +10491,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pkg-types@npm:^2.0.0, pkg-types@npm:^2.1.0":
+"pkg-types@npm:^2.0.0, pkg-types@npm:^2.2.0":
   version: 2.2.0
   resolution: "pkg-types@npm:2.2.0"
   dependencies:
@@ -10440,7 +10525,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.6.2":
+"prettier@npm:^3.5.3, prettier@npm:^3.6.2":
   version: 3.6.2
   resolution: "prettier@npm:3.6.2"
   bin:
@@ -10749,8 +10834,8 @@ __metadata:
     react-native: 0.80.1
     react-native-builder-bob: ^0.40.12
     react-native-nitro-modules: ^0.26.3
-    release-it: ^19.0.3
-    turbo: ^2.5.4
+    release-it: ^19.0.4
+    turbo: ^2.5.5
     typescript: ^5.8.3
   peerDependencies:
     react: "*"
@@ -10971,37 +11056,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"release-it@npm:^19.0.3":
-  version: 19.0.3
-  resolution: "release-it@npm:19.0.3"
+"release-it@npm:^19.0.4":
+  version: 19.0.4
+  resolution: "release-it@npm:19.0.4"
   dependencies:
     "@nodeutils/defaults-deep": 1.1.0
     "@octokit/rest": 21.1.1
     "@phun-ky/typeof": 1.2.8
     async-retry: 1.3.3
-    c12: 3.0.4
-    ci-info: ^4.2.0
+    c12: 3.1.0
+    ci-info: ^4.3.0
     eta: 3.5.0
     git-url-parse: 16.1.0
-    inquirer: 12.6.3
+    inquirer: 12.7.0
     issue-parser: 7.0.1
-    lodash.get: 4.4.2
     lodash.merge: 4.6.2
     mime-types: 3.0.1
     new-github-release-url: 2.0.0
-    open: 10.1.2
+    open: 10.2.0
     ora: 8.2.0
     os-name: 6.1.0
     proxy-agent: 6.5.0
     semver: 7.7.2
     tinyglobby: 0.2.14
-    undici: 6.21.2
+    undici: 6.21.3
     url-join: 5.0.0
     wildcard-match: 5.1.4
     yargs-parser: 21.1.1
   bin:
     release-it: bin/release-it.js
-  checksum: 4089c7a1357a5a96481e29e1ab5723e38028d3289df88daececa9bc6d8571873850cd16cc2e81587f9c886da551dfa79d98f04c29f77f07d3b14c67624c89d12
+  checksum: f189a84f0e75c2048f2028dc6e61e79ebd6794eb2bb1023f55e52e237c215380f6d6b551e61fb180a035db58c837d742882ff2800693cf1fe4bb341d9feac2a3
   languageName: node
   linkType: hard
 
@@ -11167,10 +11251,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"run-async@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "run-async@npm:3.0.0"
-  checksum: 280c03d5a88603f48103fc6fd69f07fb0c392a1e0d319c34ec96a2516030e07ba06f79231a563c78698b882649c2fc1fda601bc84705f57d50efcd1fa506cfc0
+"run-async@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "run-async@npm:4.0.4"
+  dependencies:
+    oxlint: ^1.2.0
+    prettier: ^3.5.3
+  checksum: 88640c6865c6eb8c697909ab9938680e804e4ec16a23d37f6c537fd81a92e6816685fc76a6ccdfe4c0a32254d033b43e0dcd33f1c602431f975d95a07118071f
   languageName: node
   linkType: hard
 
@@ -12039,58 +12126,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-darwin-64@npm:2.5.4"
+"turbo-darwin-64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-darwin-64@npm:2.5.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-darwin-arm64@npm:2.5.4"
+"turbo-darwin-arm64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-darwin-arm64@npm:2.5.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-linux-64@npm:2.5.4"
+"turbo-linux-64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-linux-64@npm:2.5.5"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-linux-arm64@npm:2.5.4"
+"turbo-linux-arm64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-linux-arm64@npm:2.5.5"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-windows-64@npm:2.5.4"
+"turbo-windows-64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-windows-64@npm:2.5.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-windows-arm64@npm:2.5.4"
+"turbo-windows-arm64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-windows-arm64@npm:2.5.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^2.5.4":
-  version: 2.5.4
-  resolution: "turbo@npm:2.5.4"
+"turbo@npm:^2.5.5":
+  version: 2.5.5
+  resolution: "turbo@npm:2.5.5"
   dependencies:
-    turbo-darwin-64: 2.5.4
-    turbo-darwin-arm64: 2.5.4
-    turbo-linux-64: 2.5.4
-    turbo-linux-arm64: 2.5.4
-    turbo-windows-64: 2.5.4
-    turbo-windows-arm64: 2.5.4
+    turbo-darwin-64: 2.5.5
+    turbo-darwin-arm64: 2.5.5
+    turbo-linux-64: 2.5.5
+    turbo-linux-arm64: 2.5.5
+    turbo-windows-64: 2.5.5
+    turbo-windows-arm64: 2.5.5
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -12106,7 +12193,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: b0b1b5a3ad8cece743c32dbbfaf48b3e16dad1ec238afbd2259447a1d2346955bc2d2da4b650b0114ee3c92b32179a56e47c640be027ddcf5a10e6724f0e8245
+  checksum: 8da6525097ba17bb59571eb512f216362b046bbf88765ddb05fb9937a44e04eeba3bb883c55fca53a7e8a104e02366b4f6f99ef90d12078d0dc95d4659004af6
   languageName: node
   linkType: hard
 
@@ -12279,10 +12366,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:6.21.2":
-  version: 6.21.2
-  resolution: "undici@npm:6.21.2"
-  checksum: 4d7227910bfee0703ea5c5c9d4343bcb2a80d2ce2eb64698b6fb8cc48852e29f7c7c623126161a5073fd594c9040ae7e7ecc8e093fe6e84a9394dd2595754ec5
+"undici@npm:6.21.3":
+  version: 6.21.3
+  resolution: "undici@npm:6.21.3"
+  checksum: a2af0601deece36acbcc11ef722f36ad3c1e035d3065b9fbb36987487f7b69904046fa95c18f228a872ca45441f156fcaacd948fc920b0a97d0c1ab78ea63c04
   languageName: node
   linkType: hard
 
@@ -12749,6 +12836,15 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: f9bb062abf54cc8f02d94ca86dcd349c3945d63851f5d07a3a61c2fcb755b15a88e943a63cf580cbdb5b74436d67ef6b67f745b8f7c0814e411379138e1863cb
+  languageName: node
+  linkType: hard
+
+"wsl-utils@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "wsl-utils@npm:0.1.0"
+  dependencies:
+    is-wsl: ^3.1.0
+  checksum: de4c92187e04c3c27b4478f410a02e81c351dc85efa3447bf1666f34fc80baacd890a6698ec91995631714086992036013286aea3d77e6974020d40a08e00aec
   languageName: node
   linkType: hard
 

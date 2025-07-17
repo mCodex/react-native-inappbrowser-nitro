@@ -78,7 +78,7 @@ public class InAppBrowserNitroImpl: HybridInAppBrowserNitroSpec {
         }
         
         // Handle presentation and transition styles, ensuring partialCurl uses fullScreen
-        if let transitionStyle = options?.modalTransitionStyle, transitionStyle == .partialCurl {
+        if let transitionStyle = options?.modalTransitionStyle, transitionStyle == .partialcurl {
             safariViewController?.modalPresentationStyle = .fullScreen
         } else if let presentationStyle = options?.modalPresentationStyle {
             safariViewController?.modalPresentationStyle = getPresentationStyle(from: presentationStyle)
