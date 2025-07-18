@@ -5,6 +5,7 @@ import type {
   InAppBrowserResult,
   InAppBrowserAuthResult,
 } from './InAppBrowserNitro.nitro';
+import { useInAppBrowser as useInAppBrowserHook } from './hooks/useInAppBrowser';
 
 const InAppBrowserNitroHybridObject =
   NitroModules.createHybridObject<InAppBrowserNitro>('InAppBrowserNitro');
@@ -16,6 +17,10 @@ const InAppBrowserNitroHybridObject =
  * with support for authentication flows, deep linking, and performance optimizations.
  */
 export class InAppBrowser {
+  /**
+   * React hook for InAppBrowser functionality
+   */
+  static useInAppBrowser?: typeof useInAppBrowserHook;
   /**
    * Check if the device supports InAppBrowser
    * @returns Promise<boolean> - true if supported, false otherwise

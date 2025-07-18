@@ -1,4 +1,5 @@
 import { InAppBrowser } from './InAppBrowserCore';
+import { useInAppBrowser } from './hooks/useInAppBrowser';
 
 // Export the main class
 export { InAppBrowser } from './InAppBrowserCore';
@@ -22,3 +23,7 @@ export const RNInAppBrowserNitro = InAppBrowser;
 
 // Hook for React components
 export { useInAppBrowser } from './hooks/useInAppBrowser';
+
+// Add hooks to the InAppBrowser object for legacy compatibility
+// This ensures that imports like `InAppBrowser.useInAppBrowser` will work
+InAppBrowser.useInAppBrowser = useInAppBrowser;

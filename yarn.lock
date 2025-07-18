@@ -9759,18 +9759,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nitro-codegen@npm:^0.26.3":
-  version: 0.26.3
-  resolution: "nitro-codegen@npm:0.26.3"
+"nitro-codegen@npm:^0.26.4":
+  version: 0.26.4
+  resolution: "nitro-codegen@npm:0.26.4"
   dependencies:
     chalk: ^5.3.0
-    react-native-nitro-modules: ^0.26.3
+    react-native-nitro-modules: ^0.26.4
     ts-morph: ^25.0.0
     yargs: ^17.7.2
-    zod: ^3.23.8
+    zod: ^4.0.5
   bin:
     nitro-codegen: lib/index.js
-  checksum: 8bac66cb1117446be5732261a42f1c4e90edbf509fe95a50a25f521dfd3c8f3cc39f351b33e5ea65e323eb150b41deb269e2421d2ed6e382c63fc4a6671fb23b
+  checksum: a059c6fa2ada4922d3aba6875f8e19753b1bbe4be610aeecce910c384b623a2428f3270f6f182afe7b6e8ee141aded35aa7b1555b9847f60cfcaccbd97c9b3b4
   languageName: node
   linkType: hard
 
@@ -10804,7 +10804,7 @@ __metadata:
     react-native: 0.80.1
     react-native-builder-bob: ^0.40.12
     react-native-monorepo-config: ^0.1.9
-    react-native-nitro-modules: ^0.26.3
+    react-native-nitro-modules: ^0.26.4
   languageName: unknown
   linkType: soft
 
@@ -10828,12 +10828,12 @@ __metadata:
     eslint-config-prettier: ^10.1.5
     eslint-plugin-prettier: ^5.5.1
     jest: ^30.0.4
-    nitro-codegen: ^0.26.3
+    nitro-codegen: ^0.26.4
     prettier: ^3.6.2
     react: 19.1.0
     react-native: 0.80.1
     react-native-builder-bob: ^0.40.12
-    react-native-nitro-modules: ^0.26.3
+    react-native-nitro-modules: ^0.26.4
     release-it: ^19.0.4
     turbo: ^2.5.5
     typescript: ^5.8.3
@@ -10854,13 +10854,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:^0.26.3":
-  version: 0.26.3
-  resolution: "react-native-nitro-modules@npm:0.26.3"
+"react-native-nitro-modules@npm:^0.26.4":
+  version: 0.26.4
+  resolution: "react-native-nitro-modules@npm:0.26.4"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 53f311d76375dda0fb059b2535f27527ac1c486143151579aabd114bdb17d8029f00aef953f13274239e0e43f94e30f6883d749d40905ee475c0d58cc31a1973
+  checksum: 1851f7c19c8af6c7ceaac97d2c8f105826a167ca29e1189525bcb4c4c52902ba72fc51b52a3d4ff0dd1beb4cf74405435b1badac7552a71ef8fbb235503274ba
   languageName: node
   linkType: hard
 
@@ -12964,9 +12964,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.23.8":
-  version: 3.25.76
-  resolution: "zod@npm:3.25.76"
-  checksum: c9a403a62b329188a5f6bd24d5d935d2bba345f7ab8151d1baa1505b5da9f227fb139354b043711490c798e91f3df75991395e40142e6510a4b16409f302b849
+"zod@npm:^4.0.5":
+  version: 4.0.5
+  resolution: "zod@npm:4.0.5"
+  checksum: d1e35c6737ac448e2115e5f3bfa4d71e398f4f4c95243fd4128dca74f7df40163337a26c812bc365ea95e27206787ab57bd4d682c8e8b8af2ed298eff1e7d8ba
   languageName: node
   linkType: hard
