@@ -87,10 +87,13 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Finalize Android SDK
+      - name: Setup Android SDK
         if: env.turbo_cache_hit != 1
-        run: |
-          /bin/bash -c "yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null"
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK licenses
+        if: env.turbo_cache_hit != 1
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Cache Gradle
         if: env.turbo_cache_hit != 1
@@ -103,10 +106,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Set ANDROID_HOME env var
-        run: echo "ANDROID_HOME=/usr/local/share/android/sdk" >> $GITHUB_ENV
-
       - name: Create local.properties for Android SDK
+        if: env.turbo_cache_hit != 1
         run: echo "sdk.dir=$ANDROID_HOME" > example/android/local.properties
 
       - name: Build example for Android
