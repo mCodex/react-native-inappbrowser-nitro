@@ -16,7 +16,6 @@ import androidx.browser.customtabs.CustomTabsSession
 import com.margelo.nitro.inappbrowsernitro.BrowserAnimations
 import com.margelo.nitro.inappbrowsernitro.BrowserColorScheme
 import com.margelo.nitro.inappbrowsernitro.BrowserShareState
-import com.margelo.nitro.inappbrowsernitro.DynamicColor
 import com.margelo.nitro.inappbrowsernitro.InAppBrowserOptions
 
 internal class CustomTabsIntentFactory(
@@ -41,27 +40,20 @@ internal class CustomTabsIntentFactory(
   }
 
   private fun applyColors(builder: CustomTabsIntent.Builder, options: InAppBrowserOptions?) {
-    val toolbarParams = buildColorParams(options?.toolbarColor)
-    if (toolbarParams != null) {
-      builder.setDefaultColorSchemeParams(toolbarParams.system)
-      builder.setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT, toolbarParams.light)
-      builder.setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, toolbarParams.dark)
+    val colorSchemes = buildColorParams(options)
+
+    when {
+      colorSchemes?.system != null -> builder.setDefaultColorSchemeParams(colorSchemes.system)
+      colorSchemes?.light != null -> builder.setDefaultColorSchemeParams(colorSchemes.light)
+      colorSchemes?.dark != null -> builder.setDefaultColorSchemeParams(colorSchemes.dark)
     }
 
-    buildColorParams(options?.secondaryToolbarColor)?.systemColor?.let {
-      builder.setSecondaryToolbarColor(it)
+    colorSchemes?.light?.let {
+      builder.setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT, it)
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-      buildColorParams(options?.navigationBarColor)?.systemColor?.let { color ->
-        builder.setNavigationBarColor(color)
-      }
-    }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      buildColorParams(options?.navigationBarDividerColor)?.systemColor?.let { color ->
-        builder.setNavigationBarDividerColor(color)
-      }
+    colorSchemes?.dark?.let {
+      builder.setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, it)
     }
 
     options?.colorScheme?.let { scheme ->
@@ -135,26 +127,45 @@ internal class CustomTabsIntentFactory(
     }
   }
 
-  private fun buildColorParams(color: DynamicColor?): ColorSchemeParams? {
-    val system = DynamicColorResolver.resolveForScheme(color, DynamicColorResolver.DynamicScheme.SYSTEM)
-    val light = DynamicColorResolver.resolveForScheme(color, DynamicColorResolver.DynamicScheme.LIGHT)
-    val dark = DynamicColorResolver.resolveForScheme(color, DynamicColorResolver.DynamicScheme.DARK)
+  private fun buildColorParams(options: InAppBrowserOptions?): ColorSchemeParams? {
+    val system = resolveColorSet(options, DynamicColorResolver.DynamicScheme.SYSTEM)
+    val light = resolveColorSet(options, DynamicColorResolver.DynamicScheme.LIGHT)
+    val dark = resolveColorSet(options, DynamicColorResolver.DynamicScheme.DARK)
 
-    if (system == null && light == null && dark == null) {
+    val systemParams = system.toCustomTabParams()
+    val lightParams = light.toCustomTabParams()
+    val darkParams = dark.toCustomTabParams()
+
+    if (systemParams == null && lightParams == null && darkParams == null) {
       return null
     }
 
     return ColorSchemeParams(
-      system = CustomTabColorSchemeParams.Builder().apply {
-        system?.let { setToolbarColor(it) }
-      }.build(),
-      light = CustomTabColorSchemeParams.Builder().apply {
-        light?.let { setToolbarColor(it) }
-      }.build(),
-      dark = CustomTabColorSchemeParams.Builder().apply {
-        dark?.let { setToolbarColor(it) }
-      }.build(),
-      systemColor = system
+      system = systemParams,
+      light = lightParams,
+      dark = darkParams,
+    )
+  }
+
+  private fun resolveColorSet(options: InAppBrowserOptions?, scheme: DynamicColorResolver.DynamicScheme): ColorSet {
+    val toolbar = DynamicColorResolver.resolveForScheme(options?.toolbarColor, scheme)
+    val secondaryToolbar = DynamicColorResolver.resolveForScheme(options?.secondaryToolbarColor, scheme)
+    val navigationBar = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+      DynamicColorResolver.resolveForScheme(options?.navigationBarColor, scheme)
+    } else {
+      null
+    }
+    val navigationDivider = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      DynamicColorResolver.resolveForScheme(options?.navigationBarDividerColor, scheme)
+    } else {
+      null
+    }
+
+    return ColorSet(
+      toolbar = toolbar,
+      secondaryToolbar = secondaryToolbar,
+      navigationBar = navigationBar,
+      navigationBarDivider = navigationDivider,
     )
   }
 
@@ -191,11 +202,34 @@ internal class CustomTabsIntentFactory(
   }
 
   private data class ColorSchemeParams(
-    val system: CustomTabColorSchemeParams,
-    val light: CustomTabColorSchemeParams,
-    val dark: CustomTabColorSchemeParams,
-    val systemColor: Int?,
+    val system: CustomTabColorSchemeParams?,
+    val light: CustomTabColorSchemeParams?,
+    val dark: CustomTabColorSchemeParams?,
   )
+
+  private data class ColorSet(
+    val toolbar: Int?,
+    val secondaryToolbar: Int?,
+    val navigationBar: Int?,
+    val navigationBarDivider: Int?,
+  ) {
+    fun hasAny(): Boolean {
+      return toolbar != null || secondaryToolbar != null || navigationBar != null || navigationBarDivider != null
+    }
+
+    fun toCustomTabParams(): CustomTabColorSchemeParams? {
+      if (!hasAny()) {
+        return null
+      }
+
+      return CustomTabColorSchemeParams.Builder().apply {
+        toolbar?.let(::setToolbarColor)
+        secondaryToolbar?.let(::setSecondaryToolbarColor)
+        navigationBar?.let(::setNavigationBarColor)
+        navigationBarDivider?.let(::setNavigationBarDividerColor)
+      }.build()
+    }
+  }
 
   private fun BrowserColorScheme.toCustomTabsScheme(): Int {
     return when (this) {
