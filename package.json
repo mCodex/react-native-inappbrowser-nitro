@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "git clean -dfX",
     "release": "semantic-release",
-    "build": "npm run typecheck && bob build",
+    "build": "npm run typecheck && bob build && node ./scripts/remove-source-maps.cjs",
     "codegen": "nitrogen --logLevel=\"debug\" && npm run build && node post-script.js",
     "prepublish": "yarn codegen"
   },
