@@ -1,6 +1,6 @@
 {
   "name": "react-native-inappbrowser-nitro",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "react-native-inappbrowser-nitro is a react native package built with Nitro",
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
