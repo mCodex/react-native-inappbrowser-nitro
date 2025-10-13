@@ -12,7 +12,8 @@
     "clean": "git clean -dfX",
     "release": "semantic-release",
     "build": "npm run typecheck && bob build",
-    "codegen": "nitrogen --logLevel=\"debug\" && npm run build && node post-script.js"
+    "codegen": "nitrogen --logLevel=\"debug\" && npm run build && node post-script.js",
+    "prepublish": "yarn codegen"
   },
   "keywords": [
     "react-native",
