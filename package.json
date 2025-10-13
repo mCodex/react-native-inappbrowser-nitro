@@ -42,11 +42,11 @@
   "workspaces": [
     "example"
   ],
-  "repository": "https://github.com/mateusandrade/react-native-inappbrowser-nitro.git",
+  "repository": "https://github.com/mCodex/react-native-inappbrowser-nitro.git",
   "author": "Mateus Andrade",
   "license": "MIT",
-  "bugs": "https://github.com/mateusandrade/react-native-inappbrowser-nitro/issues",
-  "homepage": "https://github.com/mateusandrade/react-native-inappbrowser-nitro#readme",
+  "bugs": "https://github.com/mCodex/react-native-inappbrowser-nitro/issues",
+  "homepage": "https://github.com/mCodex/react-native-inappbrowser-nitro#readme",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
