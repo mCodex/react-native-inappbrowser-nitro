@@ -1,17 +1,11 @@
 buildscript {
-  ext.getExtOrDefault = {name ->
-    return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['InAppBrowserNitro_' + name]
-  }
-
   repositories {
     google()
     mavenCentral()
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:8.7.2"
-    // noinspection DifferentKotlinGradleVersion
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
+    classpath "com.android.tools.build:gradle:8.8.0"
   }
 }
 
@@ -20,28 +14,41 @@ def reactNativeArchitectures() {
   return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-apply plugin: "com.android.library"
-apply plugin: "kotlin-android"
-apply from: '../nitrogen/generated/android/inappbrowsernitro+autolinking.gradle'
+def isNewArchitectureEnabled() {
+  return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
+}
 
-apply plugin: "com.facebook.react"
+apply plugin: "com.android.library"
+apply plugin: 'org.jetbrains.kotlin.android'
+apply from: '../nitrogen/generated/android/InappbrowserNitro+autolinking.gradle'
+apply from: "./fix-prefab.gradle"
+
+if (isNewArchitectureEnabled()) {
+  apply plugin: "com.facebook.react"
+}
+
+def getExtOrDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties["InappbrowserNitro_" + name]
+}
 
 def getExtOrIntegerDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["InAppBrowserNitro_" + name]).toInteger()
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["InappbrowserNitro_" + name]).toInteger()
 }
 
 android {
-  namespace "com.margelo.nitro.inappbrowsernitro"
+  namespace "com.inappbrowsernitro"
 
+  ndkVersion getExtOrDefault("ndkVersion")
   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
 
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
     externalNativeBuild {
       cmake {
-        cppFlags "-frtti -fexceptions -Wall -fstack-protector-all"
+        cppFlags "-frtti -fexceptions -Wall -Wextra -fstack-protector-all"
         arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
         abiFilters (*reactNativeArchitectures())
 
@@ -65,24 +72,22 @@ android {
 
   packagingOptions {
     excludes = [
-      "META-INF",
-      "META-INF/**",
-      "**/libc++_shared.so",
-      "**/libfbjni.so",
-      "**/libjsi.so",
-      "**/libfolly_json.so",
-      "**/libfolly_runtime.so",
-      "**/libglog.so",
-      "**/libhermes.so",
-      "**/libhermes-executor-debug.so",
-      "**/libhermes_executor.so",
-      "**/libreactnative.so",
-      "**/libreactnativejni.so",
-      "**/libturbomodulejsijni.so",
-      "**/libreact_nativemodule_core.so",
-      "**/libjscexecutor.so",
-      // Exclude duplicate React spec to avoid dex merge errors
-      "com/facebook/fbreact/specs/NativeAccessibilityInfoSpec.class"
+        "META-INF",
+        "META-INF/**",
+        "**/libc++_shared.so",
+        "**/libfbjni.so",
+        "**/libjsi.so",
+        "**/libfolly_json.so",
+        "**/libfolly_runtime.so",
+        "**/libglog.so",
+        "**/libhermes.so",
+        "**/libhermes-executor-debug.so",
+        "**/libhermes_executor.so",
+        "**/libreactnative.so",
+        "**/libreactnativejni.so",
+        "**/libturbomodulejsijni.so",
+        "**/libreact_nativemodule_core.so",
+        "**/libjscexecutor.so"
     ]
   }
 
@@ -108,10 +113,12 @@ android {
 
   sourceSets {
     main {
-      java.srcDirs += [
-        "generated/java",
-        "generated/jni"
-      ]
+      if (isNewArchitectureEnabled()) {
+        java.srcDirs += [
+          // React Codegen files
+          "${project.buildDir}/generated/source/codegen/java"
+        ]
+      }
     }
   }
 }
@@ -121,13 +128,24 @@ repositories {
   google()
 }
 
-def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-  implementation "com.facebook.react:react-android"
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  // For < 0.71, this will be from the local maven repo
+  // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
+  //noinspection GradleDynamicVersion
+  implementation "com.facebook.react:react-native:+"
+
+  // Add a dependency on NitroModules
   implementation project(":react-native-nitro-modules")
-  
-  implementation "androidx.browser:browser:1.8.0"
+
+  implementation "androidx.browser:browser:1.7.0"
+  implementation "androidx.core:core-ktx:1.13.1"
 }
 
+if (isNewArchitectureEnabled()) {
+  react {
+    jsRootDir = file("../src/")
+    libraryName = "InappbrowserNitro"
+    codegenJavaPackageName = "com.inappbrowsernitro"
+  }
+}
