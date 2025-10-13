@@ -139,7 +139,7 @@ dependencies {
   implementation project(":react-native-nitro-modules")
 
   implementation "androidx.browser:browser:1.7.0"
-  implementation "androidx.core:core-ktx:1.13.1"
+  implementation "androidx.core:core-ktx:1.17.0"
 }
 
 if (isNewArchitectureEnabled()) {
