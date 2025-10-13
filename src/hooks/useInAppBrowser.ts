@@ -19,7 +19,6 @@ export interface UseInAppBrowserReturn {
   ) => Promise<InAppBrowserAuthResult>
   close: () => Promise<void>
   closeAuth: () => Promise<void>
-  warmup: (options?: InAppBrowserOptions) => Promise<void>
   isAvailable: () => Promise<boolean>
   isLoading: boolean
   error: Error | null
@@ -40,8 +39,8 @@ export function useInAppBrowser(): UseInAppBrowserReturn {
     setError(null)
 
     try {
-      const result = await operation()
-      
+  const result = await operation()
+
       if (isMountedRef.current) {
         setIsLoading(false)
       }
@@ -82,12 +81,6 @@ export function useInAppBrowser(): UseInAppBrowserReturn {
     [runSafely]
   )
 
-  const warmup = useCallback(
-    (options?: InAppBrowserOptions) =>
-      runSafely(() => InAppBrowser.warmup(options)),
-    [runSafely]
-  )
-
   const isAvailable = useCallback(
     () => runSafely(() => InAppBrowser.isAvailable()),
     [runSafely]
@@ -98,7 +91,6 @@ export function useInAppBrowser(): UseInAppBrowserReturn {
     openAuth,
     close,
     closeAuth,
-    warmup,
     isAvailable,
     isLoading,
     error,

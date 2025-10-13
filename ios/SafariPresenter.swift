@@ -74,11 +74,6 @@ final class SafariPresenter: NSObject {
     self.delegate = nil
   }
 
-  @MainActor
-  func warmup(options: InAppBrowserOptions?) {
-    // No-op here; handled by BrowserWarmupCoordinator to avoid multiple presenters racing.
-  }
-
   private func apply(options: InAppBrowserOptions?, to controller: SFSafariViewController) {
     if let barColor = UIColor.from(dynamicColor: options?.preferredBarTintColor) {
       controller.preferredBarTintColor = barColor

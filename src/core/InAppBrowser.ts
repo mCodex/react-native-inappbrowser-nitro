@@ -85,12 +85,4 @@ export class InAppBrowser {
     return getNativeModule().closeAuth()
   }
 
-  /**
-   * Warm up native browser resources to improve first paint latency.
-   */
-  static async warmup(options?: InAppBrowserOptions): Promise<void> {
-    const sanitizedOptions = mapOptions(options)
-    
-    return getNativeModule().warmup(sanitizedOptions)
-  }
 }

@@ -32,7 +32,7 @@ Lightning-fast, modern in-app browser for React Native powered by Nitro Modules.
 - Fully typed TypeScript API plus ergonomic React hook helpers.
 - ✅ **iOS 26 ready**: high-contrast dynamic colors, edge-dismiss control, and UI style overrides.
 - ✅ **Android 16 ready**: partial custom tabs, referrer controls, and per-theme palettes.
-- Authentication-first design with ephemeral sessions, warmup, and graceful fallbacks.
+- Authentication-first design with ephemeral sessions and graceful fallbacks.
 - Works great with Hermes, Fabric, and the React Native New Architecture.
 
 ## Platform Support
@@ -40,7 +40,7 @@ Lightning-fast, modern in-app browser for React Native powered by Nitro Modules.
 | Platform | Minimum | Targeted | Highlights |
 |----------|---------|----------|------------|
 | iOS | 11.0 | 17 / 26* | SafariViewController + ASWebAuthentication support. |
-| Android | API 23 | API 34 / 16* | Chrome Custom Tabs with warmup and dynamic theming. |
+| Android | API 23 | API 34 / 16* | Chrome Custom Tabs with dynamic theming. |
 | React Native | 0.70.0 | Latest | Nitro Modules + TypeScript bindings. |
 
 \* iOS 26 and Android 16 features are automatically gated behind runtime checks.
@@ -113,22 +113,6 @@ export function LaunchButton() {
 }
 ```
 
-### Warmup & Prefetch
-
-```tsx
-import { useEffect } from 'react'
-import { InAppBrowser } from 'react-native-inappbrowser-nitro'
-
-export function useBrowserWarmup() {
-  useEffect(() => {
-    InAppBrowser.warmup({
-      toolbarColor: { base: '#0EA5E9' },
-      includeReferrer: true,
-    }).catch(console.warn)
-  }, [])
-}
-```
-
 ### Authentication Flow (OAuth / SSO)
 
 ```tsx
@@ -177,17 +161,7 @@ If you depended on awaiting dismissal, refactor to handle completion via deep li
 +InAppBrowser.open(url, { toolbarColor: { base: '#6200EE', dark: '#3700B3' } })
 ```
 
-### 3. Use `warmup()` instead of manual Custom Tabs priming
-
-Chrome warmup is wrapped in a cross-platform helper. Call it during app boot or screen focus:
-
-```tsx
-useEffect(() => {
-  InAppBrowser.warmup({ toolbarColor: { base: '#0EA5E9' } }).catch(console.warn)
-}, [])
-```
-
-### 4. Prefer the hook for loading/error handling
+### 3. Prefer the hook for loading/error handling
 
 `useInAppBrowser` wraps the imperative API with loading state and error capture, aligning with the new async semantics.
 
@@ -197,7 +171,7 @@ useEffect(() => {
 +const handleOpen = () => open(url)
 ```
 
-### 5. Regenerate bindings after upgrading
+### 4. Regenerate bindings after upgrading
 
 Run `yarn codegen && yarn build` (or your project script) to regenerate Nitro bindings so the new enums and options are available on both platforms.
 
@@ -210,7 +184,6 @@ Run `yarn codegen && yarn build` (or your project script) to regenerate Nitro bi
 | `openAuth(url, redirectUrl, options?)` | Open an OAuth/SSO flow that resolves once the redirect URL is reached. |
 | `close()` | Programmatically dismiss an open browser session. |
 | `closeAuth()` | Abort an authentication session. |
-| `warmup(options?)` | Pre-initialize native resources to improve first paint. |
 
 All functions return Promises and are fully typed. See `src/core/InAppBrowser.ts` for the higher-level wrapper implementation.
 

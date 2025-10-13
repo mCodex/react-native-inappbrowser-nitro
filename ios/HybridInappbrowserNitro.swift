@@ -1,9 +1,8 @@
 import NitroModules
 
-final class HybridInappbrowserNitro: NSObject, HybridInappbrowserNitroSpec {
+final class HybridInappbrowserNitro: HybridInappbrowserNitroSpec {
   private let safariPresenter = SafariPresenter()
   private let authManager = AuthSessionManager()
-  private let warmupCoordinator = BrowserWarmupCoordinator()
 
   func isAvailable() throws -> Promise<Bool> {
     Promise.resolved(withResult: true)
@@ -15,9 +14,7 @@ final class HybridInappbrowserNitro: NSObject, HybridInappbrowserNitroSpec {
         return InAppBrowserResult(type: .dismiss, url: nil, message: "module released")
       }
 
-      return await MainActor.run {
-        self.safariPresenter.present(urlString: url, options: options)
-      }
+      return await self.safariPresenter.present(urlString: url, options: options)
     }
   }
 
@@ -27,9 +24,7 @@ final class HybridInappbrowserNitro: NSObject, HybridInappbrowserNitroSpec {
         return InAppBrowserAuthResult(type: .dismiss, url: nil, message: "module released")
       }
 
-      return await MainActor.run {
-        self.authManager.start(urlString: url, redirectUrl: redirectUrl, options: options)
-      }
+      return await self.authManager.start(urlString: url, redirectUrl: redirectUrl, options: options)
     }
   }
 
@@ -37,9 +32,7 @@ final class HybridInappbrowserNitro: NSObject, HybridInappbrowserNitroSpec {
     Promise.async { [weak self] in
       guard let self else { return }
 
-      await MainActor.run {
-        await self.safariPresenter.dismiss()
-      }
+      await self.safariPresenter.dismiss()
     }
   }
 
@@ -47,18 +40,8 @@ final class HybridInappbrowserNitro: NSObject, HybridInappbrowserNitroSpec {
     Promise.async { [weak self] in
       guard let self else { return }
 
-      await MainActor.run {
-        self.authManager.cancel()
-      }
+      await self.authManager.cancel()
     }
   }
 
-  func warmup(options: InAppBrowserOptions?) throws -> Promise<Void> {
-    Promise.async { [weak self] in
-      guard let self else { return }
-
-      await MainActor.run {
-        self.warmupCoordinator.prewarm(options: options)
-      }
-    }
-  }
+}

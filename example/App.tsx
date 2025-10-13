@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -15,7 +16,6 @@ import {
 
 import type { InAppBrowserResult } from 'react-native-inappbrowser-nitro'
 
-const DOCS_URL = 'https://nitro.margelo.com'
 const REPO_URL = 'https://github.com/mCodex/react-native-inappbrowser-nitro'
 const AUTH_REDIRECT_URL = 'inappbrowsernitro://callback'
 const AUTH_URL = `https://httpbin.org/redirect-to?url=${encodeURIComponent(AUTH_REDIRECT_URL)}`
@@ -29,6 +29,20 @@ const toolbarPalette = {
 const controlPalette = {
   base: '#FFFFFF',
   highContrast: '#FFD700',
+}
+
+const ios26ShowcasePalette = {
+  base: '#F97316',
+  light: '#FDBA74',
+  dark: '#7C3AED',
+  highContrast: '#DC2626',
+}
+
+const ios26ControlPalette = {
+  base: '#0F172A',
+  light: '#1E293B',
+  dark: '#F8FAFC',
+  highContrast: '#0EA5E9',
 }
 
 type ExampleButtonProps = {
@@ -82,21 +96,13 @@ function App(): React.JSX.Element {
       .catch(() => setIsSupported(false))
   }, [])
 
-  useEffect(() => {
-    InAppBrowser.warmup({
-      toolbarColor: toolbarPalette,
-      includeReferrer: true,
-      enablePartialCustomTab: true,
-    }).catch(console.warn)
-  }, [])
-
   const pushLog = useCallback((message: string) => {
     setLog(current => [message, ...current].slice(0, 6))
   }, [])
 
   const handleOpenDocs = useCallback(async () => {
     try {
-      const result = await open(DOCS_URL, {
+      const result = await open(REPO_URL, {
         preferredBarTintColor: toolbarPalette,
         preferredControlTintColor: controlPalette,
         preferredStatusBarStyle: 'lightContent',
@@ -128,6 +134,24 @@ function App(): React.JSX.Element {
       })
 
       pushLog(formatResult(result))
+    } catch (err) {
+      pushLog(formatError(err))
+    }
+  }, [open, pushLog])
+
+  const handleOpenIos26Palette = useCallback(async () => {
+    try {
+      const result = await open(REPO_URL, {
+        preferredBarTintColor: ios26ShowcasePalette,
+        preferredControlTintColor: ios26ControlPalette,
+        preferredStatusBarStyle: 'darkContent',
+        overrideUserInterfaceStyle: 'light',
+        dismissButtonStyle: 'done',
+        enableEdgeDismiss: false,
+        formSheetPreferredContentSize: { width: 414, height: 720 },
+      })
+
+      pushLog(`iOS 26 palette • ${formatResult(result)}`)
     } catch (err) {
       pushLog(formatError(err))
     }
@@ -191,6 +215,11 @@ function App(): React.JSX.Element {
             tone="secondary"
           />
           <ExampleButton
+            label="Showcase iOS 26 color overrides"
+            onPress={handleOpenIos26Palette}
+            disabled={isSupported === false || Platform.OS !== 'ios'}
+          />
+          <ExampleButton
             label="Launch auth session (demo)"
             onPress={handleAuth}
             disabled={isSupported === false}
@@ -204,6 +233,10 @@ function App(): React.JSX.Element {
             iOS 26 allows blocking swipe-to-dismiss during sensitive auth flows via <Text style={styles.code}>enableEdgeDismiss</Text>. Android
             16 adds dynamic contrast colors and partial custom tabs; emulators without gesture navigation may require the hardware back
             button to exit.
+          </Text>
+          <Text style={styles.paragraph}>
+            The showcase button demonstrates the new iOS 26 palette controls, including high-contrast overrides, status bar tinting, and
+            form-sheet sizing. On older iOS versions the system gracefully ignores unsupported keys.
           </Text>
         </View>
 

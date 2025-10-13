@@ -236,8 +236,4 @@ export interface InappbrowserNitro
    */
   closeAuth(): Promise<void>
 
-  /**
-   * Warm-up native resources without opening the browser, improving TTI.
-   */
-  warmup(options?: InAppBrowserOptions): Promise<void>
 }
