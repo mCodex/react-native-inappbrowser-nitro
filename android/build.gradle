@@ -138,7 +138,7 @@ dependencies {
   // Add a dependency on NitroModules
   implementation project(":react-native-nitro-modules")
 
-  implementation "androidx.browser:browser:1.7.0"
+  implementation "androidx.browser:browser:1.9.0"
   implementation "androidx.core:core-ktx:1.13.1"
 }
 
