@@ -1,17 +1,24 @@
 {
-  "cxxNamespace": ["inappbrowsernitro"],
+  "$schema": "https://nitro.margelo.com/nitro.schema.json",
+  "cxxNamespace": [
+    "inappbrowsernitro"
+  ],
   "ios": {
-    "iosModuleName": "InAppBrowserNitro"
+    "iosModuleName": "InappbrowserNitro"
   },
   "android": {
-    "androidNamespace": ["inappbrowsernitro"],
-    "androidCxxLibName": "inappbrowsernitro"
+    "androidNamespace": [
+      "inappbrowsernitro"
+    ],
+    "androidCxxLibName": "InappbrowserNitro"
   },
   "autolinking": {
-    "InAppBrowserNitro": {
-      "swift": "InAppBrowserNitroImpl",
-      "kotlin": "InAppBrowserNitro"
+    "InappbrowserNitro": {
+      "swift": "HybridInappbrowserNitro",
+      "kotlin": "HybridInappbrowserNitro"
     }
   },
-  "ignorePaths": ["node_modules"]
+  "ignorePaths": [
+    "**/node_modules"
+  ]
 }
