@@ -8408,18 +8408,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nitrogen@npm:0.30.0":
-  version: 0.30.0
-  resolution: "nitrogen@npm:0.30.0"
+"nitrogen@npm:0.30.2":
+  version: 0.30.2
+  resolution: "nitrogen@npm:0.30.2"
   dependencies:
     chalk: ^5.3.0
-    react-native-nitro-modules: ^0.30.0
+    react-native-nitro-modules: ^0.30.2
     ts-morph: ^27.0.0
     yargs: ^18.0.0
     zod: ^4.0.5
   bin:
     nitrogen: lib/index.js
-  checksum: 6ca338ffdd9f5c9ca794bf6dd2af2431440880361b164a9514bac7ecb6d0b870c7cfd3ac09c416b3d80bedd81cd05c614d58f890b857c3cb7f3814c0b55cccff
+  checksum: b8692111891d70715b200d1c7adf129fe302cc8d85055ccb60144269970460b747d78caa110eadaee5c10f3cc077da46d53edbbc63ee9a5112a396e3256a2b32
   languageName: node
   linkType: hard
 
@@ -9618,7 +9618,7 @@ __metadata:
     babel-plugin-module-resolver: ^5.0.2
     react: 19.1.1
     react-native: 0.82.0
-    react-native-nitro-modules: 0.30.0
+    react-native-nitro-modules: 0.30.2
     react-native-safe-area-context: ^5.5.2
   languageName: unknown
   linkType: soft
@@ -9633,11 +9633,11 @@ __metadata:
     "@types/jest": ^29.5.12
     "@types/react": 19.1.1
     conventional-changelog-conventionalcommits: ^9.1.0
-    nitrogen: 0.30.0
+    nitrogen: 0.30.2
     react: 19.1.1
     react-native: 0.82
     react-native-builder-bob: ^0.37.0
-    react-native-nitro-modules: 0.30.0
+    react-native-nitro-modules: 0.30.2
     semantic-release: ^24.2.9
     typescript: ^5.8.3
   peerDependencies:
@@ -9647,13 +9647,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-nitro-modules@npm:0.30.0, react-native-nitro-modules@npm:^0.30.0":
-  version: 0.30.0
-  resolution: "react-native-nitro-modules@npm:0.30.0"
+"react-native-nitro-modules@npm:0.30.2, react-native-nitro-modules@npm:^0.30.2":
+  version: 0.30.2
+  resolution: "react-native-nitro-modules@npm:0.30.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 454ceba8bb24998c072398b666dd6effc9c06bb0c07f0d922dd5517be9967594679efc8452e63743d17c857fdf12bf416e7fa19cdb9e6f538aa3f3904a9ac210
+  checksum: da06b99c7f2def27c43da39a9eef2535b36bef48ef4cd45f49c0180fa735a0407a6f2feb6a30d39c4645a849230827e391ebc23e74236bde98a6f6176c6b291a
   languageName: node
   linkType: hard
 
@@ -11177,11 +11177,11 @@ __metadata:
 
 "typescript@patch:typescript@^5.8.3#~builtin<compat/typescript>":
   version: 5.9.3
-  resolution: "typescript@patch:typescript@npm%3A5.9.3#~builtin<compat/typescript>::version=5.9.3&hash=14eedb"
+  resolution: "typescript@patch:typescript@npm%3A5.9.3#~builtin<compat/typescript>::version=5.9.3&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 8bb8d86819ac86a498eada254cad7fb69c5f74778506c700c2a712daeaff21d3a6f51fd0d534fe16903cb010d1b74f89437a3d02d4d0ff5ca2ba9a4660de8497
+  checksum: a5a6dc399d3761ded54192031f11d3ad5df8001c7febe3fbbc8098efcb552cdf8f2f402b3618c56dafcd04fef63dee005f4900f608e185404caedc46480539ed
   languageName: node
   linkType: hard
 
