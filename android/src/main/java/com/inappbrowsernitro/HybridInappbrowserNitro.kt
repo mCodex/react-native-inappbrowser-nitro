@@ -1,6 +1,5 @@
 package com.inappbrowsernitro
 
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -70,7 +69,7 @@ class HybridInappbrowserNitro : HybridInappbrowserNitroSpec() {
             return InAppBrowserResult(BrowserResultType.SUCCESS, parsedUri.toString(), null)
         }
 
-        val fallbackLaunched = (launchContext as? Activity)?.let { launchFallback(it, url) } ?: false
+        val fallbackLaunched = launchFallback(launchContext, url)
         return if (fallbackLaunched) {
             InAppBrowserResult(BrowserResultType.SUCCESS, parsedUri.toString(), null)
         } else {
@@ -92,8 +91,8 @@ class HybridInappbrowserNitro : HybridInappbrowserNitroSpec() {
         }
     }
 
-    private fun launchFallback(activity: Activity, url: String): Boolean {
-        val fallback = BrowserFallback(activity)
+    private fun launchFallback(context: Context, url: String): Boolean {
+        val fallback = BrowserFallback(context)
         if (fallback.openSystemBrowser(url)) return true
         if (fallback.openChooser(url)) return true
         return fallback.redirectToStore()
