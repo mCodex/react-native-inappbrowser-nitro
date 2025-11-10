@@ -9917,7 +9917,7 @@ __metadata:
     prettier: "npm:^3.6.2"
     react: "npm:19.1.1"
     react-native: "npm:0.82.1"
-    react-native-nitro-modules: "npm:0.31.4"
+    react-native-nitro-modules: "npm:0.31.5"
     react-native-safe-area-context: "npm:^5.6.2"
   languageName: unknown
   linkType: soft
@@ -9953,16 +9953,6 @@ __metadata:
     escape-string-regexp: "npm:^5.0.0"
     fast-glob: "npm:^3.3.3"
   checksum: 10c0/fa88a725b4fe65443291fba746cccf2a3732defe6c8e1f7aab532b8345feac2b34af7fe17a28a96d30c7b9520f0f99e42962069ef8eb31acc4d33e7aa3b68a83
-  languageName: node
-  linkType: hard
-
-"react-native-nitro-modules@npm:0.31.4":
-  version: 0.31.4
-  resolution: "react-native-nitro-modules@npm:0.31.4"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/42fd2cc0d7f2bb913e8d757437f3aed3e123d46c79a6aecb6240e868731a0d9ba8fe097b493dc01050a2e2436cf96e978eb5b021b8f14ef0f8445f9e74e59095
   languageName: node
   linkType: hard
 
