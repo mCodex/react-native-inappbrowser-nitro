@@ -51,6 +51,9 @@ jobs:
       - name: Install dependencies (yarn)
         run: yarn install --immutable
 
+      - name: Generate Nitro bindings
+        run: yarn codegen
+
       - name: Disable new architecture in gradle.properties
         if: matrix.arch == 'old'
         run: sed -i "s/newArchEnabled=true/newArchEnabled=false/g" example/android/gradle.properties
