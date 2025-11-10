@@ -47,12 +47,8 @@ concurrency:
 
 jobs:
   build:
-    name: Build iOS Example App (${{ matrix.arch }})
+    name: Build iOS Example App
     runs-on: macOS-15
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: [new, old]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -68,10 +64,6 @@ jobs:
 
       - name: Generate Nitro bindings
         run: yarn codegen
-
-      - name: Disable new architecture in Podfile
-        if: matrix.arch == 'old'
-        run: sed -i "" "s/ENV\['RCT_NEW_ARCH_ENABLED'\] = '1'/ENV['RCT_NEW_ARCH_ENABLED'] = '0'/g" example/ios/Podfile
 
       - name: Setup Ruby (bundle)
         uses: ruby/setup-ruby@v1
