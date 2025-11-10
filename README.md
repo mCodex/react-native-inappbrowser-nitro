@@ -47,6 +47,16 @@ Lightning-fast, modern in-app browser for React Native powered by Nitro Modules.
 
 > **Expo** is not supported because Nitro modules require native compilation.
 
+## Android Browser Fallback
+
+<details>
+<summary>Browser selection logic on Android</summary>
+
+On Android, the library prioritizes Chrome Custom Tabs for the best user experience when Chrome is installed. If Chrome is not available (e.g., on Samsung devices), it falls back to opening the URL in the device's default web browser using the standard `Intent.ACTION_VIEW` mechanism.
+
+This ensures compatibility across devices while maintaining optimal performance with Chrome when possible.
+</details>
+
 ## Installation
 
 ```sh

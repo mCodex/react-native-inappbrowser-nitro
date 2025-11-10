@@ -62,12 +62,16 @@ class HybridInappbrowserNitro : HybridInappbrowserNitroSpec() {
         val parsedUri = runCatching { Uri.parse(url) }.getOrNull()
             ?: return dismiss("Invalid URL: $url")
 
-        val intent = CustomTabsIntentFactory(context, null).create(options)
+        val customTabsPackage = CustomTabsPackageHelper.resolvePackage(context, null)
         val launchContext = reactContext?.currentActivity ?: context
-        val launched = launchCustomTab(intent, launchContext, parsedUri)
 
-        if (launched) {
-            return InAppBrowserResult(BrowserResultType.SUCCESS, parsedUri.toString(), null)
+        if (customTabsPackage == "com.android.chrome") {
+            val intent = CustomTabsIntentFactory(context, null).create(options)
+            intent.intent.setPackage(customTabsPackage)
+            val launched = launchCustomTab(intent, launchContext, parsedUri)
+            if (launched) {
+                return InAppBrowserResult(BrowserResultType.SUCCESS, parsedUri.toString(), null)
+            }
         }
 
         val fallbackLaunched = launchFallback(launchContext, url)
