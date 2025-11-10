@@ -44,10 +44,12 @@ jobs:
         arch: [new, old]
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-      - name: Install dependencies (bun)
-        run: bun install
+      - name: Install dependencies (yarn)
+        run: yarn install --immutable
 
       - name: Disable new architecture in gradle.properties
         if: matrix.arch == 'old'

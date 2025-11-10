@@ -55,14 +55,16 @@ jobs:
         arch: [new, old]
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: 16.4
 
-      - name: Install dependencies (bun)
-        run: bun install
+      - name: Install dependencies (yarn)
+        run: yarn install --immutable
 
       - name: Disable new architecture in Podfile
         if: matrix.arch == 'old'
