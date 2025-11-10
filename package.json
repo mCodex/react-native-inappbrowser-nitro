@@ -17,6 +17,19 @@
   },
   "keywords": [
     "react-native",
+    "in-app-browser",
+    "custom-tabs",
+    "safari-view-controller",
+    "webview",
+    "browser",
+    "nitro",
+    "android",
+    "ios",
+    "oauth",
+    "authentication",
+    "sso",
+    "chrome-custom-tabs",
+    "safari",
     "react-native-inappbrowser-nitro"
   ],
   "files": [
@@ -59,12 +72,12 @@
     "@types/jest": "^30.0.0",
     "@types/react": "19.2.2",
     "conventional-changelog-conventionalcommits": "^9.1.0",
-    "nitrogen": "0.31.4",
+    "nitrogen": "0.31.5",
     "react": "19.2.0",
     "react-native": "0.82",
     "react-native-builder-bob": "^0.40.14",
-    "react-native-nitro-modules": "0.31.4",
-    "semantic-release": "^25.0.1",
+    "react-native-nitro-modules": "0.31.5",
+    "semantic-release": "^25.0.2",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

@@ -3,7 +3,6 @@
 [![npm version](https://img.shields.io/npm/v/react-native-inappbrowser-nitro.svg?style=flat-square)](https://www.npmjs.com/package/react-native-inappbrowser-nitro)
 [![npm downloads](https://img.shields.io/npm/dm/react-native-inappbrowser-nitro.svg?style=flat-square)](https://www.npmjs.com/package/react-native-inappbrowser-nitro)
 [![license](https://img.shields.io/npm/l/react-native-inappbrowser-nitro.svg?style=flat-square)](LICENSE)
-[![ci status](https://img.shields.io/github/actions/workflow/status/mCodex/react-native-inappbrowser-nitro/ci.yml?style=flat-square&label=CI)](https://github.com/mCodex/react-native-inappbrowser-nitro/actions)
 
 Lightning-fast, modern in-app browser for React Native powered by Nitro Modules. Enjoy direct JSI bindings, zero bridge overhead, and polished native browser UX on both iOS and Android.
 
