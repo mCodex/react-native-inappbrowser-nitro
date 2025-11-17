@@ -8653,18 +8653,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nitrogen@npm:0.31.5":
-  version: 0.31.5
-  resolution: "nitrogen@npm:0.31.5"
+"nitrogen@npm:0.31.6":
+  version: 0.31.6
+  resolution: "nitrogen@npm:0.31.6"
   dependencies:
     chalk: "npm:^5.3.0"
-    react-native-nitro-modules: "npm:^0.31.5"
+    react-native-nitro-modules: "npm:^0.31.6"
     ts-morph: "npm:^27.0.0"
     yargs: "npm:^18.0.0"
     zod: "npm:^4.0.5"
   bin:
     nitrogen: lib/index.js
-  checksum: 10c0/24898fc412f78f9de9c32af0aa326a1d8b80f8be7c0ed33e5c4a2b91809bbeb79e419617a735b8486e478262079ac14c564468556151622ab5b0bafe13e5b337
+  checksum: 10c0/0a5ddce4c526fcf65f53ab68f706f959b7c97fb30835da2e35f070ead946ba6b1ed69db2ec65927f6ed11217d1c4494bd6220607ddd115aff29ebd038f1add04
   languageName: node
   linkType: hard
 
@@ -9917,7 +9917,7 @@ __metadata:
     prettier: "npm:^3.6.2"
     react: "npm:19.1.1"
     react-native: "npm:0.82.1"
-    react-native-nitro-modules: "npm:0.31.4"
+    react-native-nitro-modules: "npm:0.31.6"
     react-native-safe-area-context: "npm:^5.6.2"
   languageName: unknown
   linkType: soft
@@ -9932,11 +9932,11 @@ __metadata:
     "@types/jest": "npm:^30.0.0"
     "@types/react": "npm:19.2.2"
     conventional-changelog-conventionalcommits: "npm:^9.1.0"
-    nitrogen: "npm:0.31.5"
+    nitrogen: "npm:0.31.6"
     react: "npm:19.2.0"
     react-native: "npm:0.82"
     react-native-builder-bob: "npm:^0.40.14"
-    react-native-nitro-modules: "npm:0.31.5"
+    react-native-nitro-modules: "npm:0.31.6"
     semantic-release: "npm:^25.0.2"
     typescript: "npm:^5.9.3"
   peerDependencies:
@@ -9956,23 +9956,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:0.31.4":
-  version: 0.31.4
-  resolution: "react-native-nitro-modules@npm:0.31.4"
+"react-native-nitro-modules@npm:0.31.6, react-native-nitro-modules@npm:^0.31.6":
+  version: 0.31.6
+  resolution: "react-native-nitro-modules@npm:0.31.6"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/42fd2cc0d7f2bb913e8d757437f3aed3e123d46c79a6aecb6240e868731a0d9ba8fe097b493dc01050a2e2436cf96e978eb5b021b8f14ef0f8445f9e74e59095
-  languageName: node
-  linkType: hard
-
-"react-native-nitro-modules@npm:0.31.5, react-native-nitro-modules@npm:^0.31.5":
-  version: 0.31.5
-  resolution: "react-native-nitro-modules@npm:0.31.5"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/e18163d7e6cda3e6faf6cb5f35ac41641ebc2e24cb9eb83d09a732157516971b74377d9ed5d049677ff53d9c99a900cd170b4a6954289a4212a0a1c58454c365
+  checksum: 10c0/d2e9eeddc449d0f51ae567b5fb012bfb531364d232e521839beac7c87c1033e13c456cd62c8b93c686a3ad7efc900f31ff1ccdb602dffe02c46d0d29379616ce
   languageName: node
   linkType: hard
 
