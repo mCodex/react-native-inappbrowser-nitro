@@ -72,11 +72,11 @@
     "@types/jest": "^30.0.0",
     "@types/react": "19.2.2",
     "conventional-changelog-conventionalcommits": "^9.1.0",
-    "nitrogen": "0.31.5",
+    "nitrogen": "0.31.6",
     "react": "19.2.0",
     "react-native": "0.82",
     "react-native-builder-bob": "^0.40.14",
-    "react-native-nitro-modules": "0.31.5",
+    "react-native-nitro-modules": "0.31.6",
     "semantic-release": "^25.0.2",
     "typescript": "^5.9.3"
   },
