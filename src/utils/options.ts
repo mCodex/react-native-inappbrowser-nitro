@@ -2,7 +2,7 @@ import type {
   BrowserAnimations,
   DynamicColor,
   InAppBrowserOptions,
-} from '../specs/inappbrowser-nitro.nitro'
+} from '../types'
 
 const COLOR_OPTION_KEYS = new Set<keyof InAppBrowserOptions>([
   'preferredBarTintColor',
@@ -100,16 +100,17 @@ export const normalizeOptions = (options?: InAppBrowserOptions) => {
       continue
     }
 
-    if (COLOR_OPTION_KEYS.has(key as keyof InAppBrowserOptions)) {
+    const typedKey = key as keyof InAppBrowserOptions
+
+    if (COLOR_OPTION_KEYS.has(typedKey)) {
       const normalizedColor = sanitizeColor(value as string | DynamicColor)
       if (normalizedColor) {
-        // @ts-expect-error - dynamic key assignment is safe for optional props
-        sanitized[key] = normalizedColor
+        ;(sanitized as Record<string, unknown>)[typedKey] = normalizedColor
       }
       continue
     }
 
-    if (key === 'headers') {
+    if (typedKey === 'headers') {
       const normalizedHeaders = sanitizeHeaders(value as Record<string, string>)
       if (normalizedHeaders) {
         sanitized.headers = normalizedHeaders
@@ -117,7 +118,7 @@ export const normalizeOptions = (options?: InAppBrowserOptions) => {
       continue
     }
 
-    if (key === 'animations') {
+    if (typedKey === 'animations') {
       const normalizedAnimations = sanitizeAnimations(value as BrowserAnimations)
       if (normalizedAnimations) {
         sanitized.animations = normalizedAnimations
@@ -125,8 +126,7 @@ export const normalizeOptions = (options?: InAppBrowserOptions) => {
       continue
     }
 
-    // @ts-expect-error - dynamic key assignment is safe for optional props
-    sanitized[key] = value
+    ;(sanitized as Record<string, unknown>)[typedKey] = value
   }
 
   return Object.keys(sanitized).length > 0 ? sanitized : undefined

@@ -84,15 +84,15 @@ No additional steps—Gradle autolinking handles everything.
 ### Imperative API
 
 ```tsx
-import { InAppBrowser } from 'react-native-inappbrowser-nitro'
+import { isAvailable, open } from 'react-native-inappbrowser-nitro'
 
 async function openDocs() {
-  if (!(await InAppBrowser.isAvailable())) {
+  if (!(await isAvailable())) {
     console.warn('No compatible browser found')
     return
   }
 
-  const result = await InAppBrowser.open('https://nitro.margelo.com', {
+  const result = await open('https://nitro.margelo.com', {
     preferredBarTintColor: { base: '#111827', light: '#1F2933', highContrast: '#000000' },
     preferredControlTintColor: { base: '#F9FAFB', highContrast: '#FFD700' }, // iOS 26+
     toolbarColor: { base: '#2563EB', dark: '#1E3A8A' },
@@ -125,7 +125,9 @@ export function LaunchButton() {
 ### Authentication Flow (OAuth / SSO)
 
 ```tsx
-const result = await InAppBrowser.openAuth(
+import { openAuth } from 'react-native-inappbrowser-nitro'
+
+const result = await openAuth(
   'https://provider.com/oauth/authorize?client_id=abc',
   'myapp://oauth/callback',
   {
@@ -143,6 +145,34 @@ if (result.type === 'success' && result.url) {
 ## Migration Guide (pre-Nitro → latest)
 
 Migrating from earlier `react-native-inappbrowser-nitro` versions? Note these key changes when adopting the Nitro rewrite:
+
+### Migrating to v3 (named exports)
+
+The `InAppBrowser` static class has been replaced with individual named exports for better tree shaking. Update your imports:
+
+```diff
+-import { InAppBrowser } from 'react-native-inappbrowser-nitro'
++import { open, openAuth, close, closeAuth, isAvailable } from 'react-native-inappbrowser-nitro'
+
+-InAppBrowser.open(url, options)
++open(url, options)
+
+-InAppBrowser.openAuth(url, redirectUrl, options)
++openAuth(url, redirectUrl, options)
+
+-InAppBrowser.close()
++close()
+
+-InAppBrowser.closeAuth()
++closeAuth()
+
+-InAppBrowser.isAvailable()
++isAvailable()
+```
+
+The hook import is unchanged: `import { useInAppBrowser } from 'react-native-inappbrowser-nitro'`
+
+---
 
 ### 1. `open()` resolves on presentation
 
@@ -194,7 +224,7 @@ Run `yarn codegen && yarn build` (or your project script) to regenerate Nitro bi
 | `close()` | Programmatically dismiss an open browser session. |
 | `closeAuth()` | Abort an authentication session. |
 
-All functions return Promises and are fully typed. See `src/core/InAppBrowser.ts` for the higher-level wrapper implementation.
+All functions return Promises and are fully typed. See `src/core/native.ts` for the native module wrapper implementation.
 
 ## Options Reference
 
