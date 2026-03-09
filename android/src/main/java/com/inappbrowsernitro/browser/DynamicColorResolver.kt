@@ -2,6 +2,7 @@ package com.inappbrowsernitro.browser
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.view.accessibility.AccessibilityManager
 import androidx.core.content.getSystemService
 import com.margelo.nitro.inappbrowsernitro.DynamicColor
@@ -11,14 +12,15 @@ internal object DynamicColorResolver {
     dynamicColor ?: return null
 
     val accessibilityManager = context.getSystemService<AccessibilityManager>()
-    val isHighContrast = accessibilityManager?.let { manager ->
-      runCatching {
-        val method = AccessibilityManager::class.java.getMethod("isHighTextContrastEnabled")
-        (method.invoke(manager) as? Boolean) == true
-      }.getOrDefault(false)
-    } == true
+    val isHighContrast = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      accessibilityManager?.isHighTextContrastEnabled == true
+    } else {
+      false
+    }
 
-    val isDark = (context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+    val isDark = (context.resources.configuration.uiMode and
+      android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+      android.content.res.Configuration.UI_MODE_NIGHT_YES
 
     val candidate = when {
       isHighContrast && dynamicColor.highContrast != null -> dynamicColor.highContrast

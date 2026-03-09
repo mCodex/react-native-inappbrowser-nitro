@@ -1,8 +1,8 @@
 package com.inappbrowsernitro.browser
 
 import android.content.Context
-import android.content.pm.PackageManager
 import androidx.browser.customtabs.CustomTabsClient
+import androidx.core.content.pm.PackageInfoCompat
 
 internal object CustomTabsPackageHelper {
   fun resolvePackage(context: Context, preferred: String?): String? {
@@ -20,9 +20,9 @@ internal object CustomTabsPackageHelper {
 
   private fun isPackageInstalled(context: Context, packageName: String): Boolean {
     return try {
-      context.packageManager.getPackageInfo(packageName, 0)
+      PackageInfoCompat.getPackageInfo(context.packageManager, packageName, 0L)
       true
-    } catch (e: PackageManager.NameNotFoundException) {
+    } catch (_: Exception) {
       false
     }
   }

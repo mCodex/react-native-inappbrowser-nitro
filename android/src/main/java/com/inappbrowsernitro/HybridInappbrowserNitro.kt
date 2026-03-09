@@ -20,9 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class HybridInappbrowserNitro : HybridInappbrowserNitroSpec() {
-    private val reactContext get() = NitroModules.applicationContext
-    private val applicationContext: Context?
-        get() = reactContext ?: NitroModules.applicationContext
+    private val applicationContext get() = NitroModules.applicationContext
 
     override fun isAvailable(): Promise<Boolean> {
         val context = applicationContext ?: return Promise.resolved(false)
@@ -50,10 +48,12 @@ class HybridInappbrowserNitro : HybridInappbrowserNitroSpec() {
     }
 
     override fun close(): Promise<Unit> {
+        // Custom Tabs runs in a separate Activity; close is handled by the user navigating back.
         return Promise.resolved(Unit)
     }
 
     override fun closeAuth(): Promise<Unit> {
+        // Custom Tabs runs in a separate Activity; close is handled by the user navigating back.
         return Promise.resolved(Unit)
     }
 
@@ -63,9 +63,9 @@ class HybridInappbrowserNitro : HybridInappbrowserNitroSpec() {
             ?: return dismiss("Invalid URL: $url")
 
         val customTabsPackage = CustomTabsPackageHelper.resolvePackage(context, null)
-        val launchContext = reactContext?.currentActivity ?: context
+        val launchContext = applicationContext?.currentActivity ?: context
 
-        if (customTabsPackage == "com.android.chrome") {
+        if (customTabsPackage != null) {
             val intent = CustomTabsIntentFactory(context, null).create(options)
             intent.intent.setPackage(customTabsPackage)
             val launched = launchCustomTab(intent, launchContext, parsedUri)
