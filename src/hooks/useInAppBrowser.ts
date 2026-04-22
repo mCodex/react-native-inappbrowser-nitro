@@ -1,99 +1,102 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from "react";
 
 import {
-  close as nativeClose,
-  closeAuth as nativeCloseAuth,
-  isAvailable as nativeIsAvailable,
-  open as nativeOpen,
-  openAuth as nativeOpenAuth,
-} from '../core/native'
+	close as nativeClose,
+	closeAuth as nativeCloseAuth,
+	isAvailable as nativeIsAvailable,
+	open as nativeOpen,
+	openAuth as nativeOpenAuth,
+} from "../core/native";
 import type {
-  InAppBrowserAuthResult,
-  InAppBrowserOptions,
-  InAppBrowserResult,
-} from '../types'
+	InAppBrowserAuthResult,
+	InAppBrowserOptions,
+	InAppBrowserResult,
+} from "../types";
 
 export interface UseInAppBrowserReturn {
-  open: (
-    url: string,
-    options?: InAppBrowserOptions
-  ) => Promise<InAppBrowserResult>
-  openAuth: (
-    url: string,
-    redirectUrl: string,
-    options?: InAppBrowserOptions
-  ) => Promise<InAppBrowserAuthResult>
-  close: () => Promise<void>
-  closeAuth: () => Promise<void>
-  isAvailable: () => Promise<boolean>
-  isLoading: boolean
-  error: Error | null
+	/**
+	 * Present the in-app browser, tracking `isLoading` / `error` on this hook.
+	 */
+	open: (
+		url: string,
+		options?: InAppBrowserOptions,
+	) => Promise<InAppBrowserResult>;
+	/**
+	 * Launch an auth session, tracking `isLoading` / `error` on this hook.
+	 */
+	openAuth: (
+		url: string,
+		redirectUrl: string,
+		options?: InAppBrowserOptions,
+	) => Promise<InAppBrowserAuthResult>;
+	/** Stateless passthrough to the native `close`. */
+	close: () => Promise<void>;
+	/** Stateless passthrough to the native `closeAuth`. */
+	closeAuth: () => Promise<void>;
+	/** Stateless passthrough to the native `isAvailable`. */
+	isAvailable: () => Promise<boolean>;
+	/** `true` while an `open` / `openAuth` call is in flight. */
+	isLoading: boolean;
+	/** Last error thrown by `open` / `openAuth`, cleared when a new call starts. */
+	error: Error | null;
 }
+
+const toError = (err: unknown): Error =>
+	err instanceof Error ? err : new Error(String(err));
 
 /**
- * React hook that wraps open/openAuth with loading and error state tracking.
- * close, closeAuth, and isAvailable are direct delegates with no overhead.
+ * React hook that wraps {@link nativeOpen} / {@link nativeOpenAuth} with
+ * loading and error state tracking. `close`, `closeAuth`, and `isAvailable`
+ * are direct delegates to the stateless module API.
  */
-export function useInAppBrowser(): UseInAppBrowserReturn {
-  const isMountedRef = useRef(true)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
+export const useInAppBrowser = (): UseInAppBrowserReturn => {
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false
-    }
-  }, [])
+	const open = useCallback(
+		async (url: string, options?: InAppBrowserOptions) => {
+			setIsLoading(true);
+			setError(null);
+			try {
+				return await nativeOpen(url, options);
+			} catch (err) {
+				const next = toError(err);
+				setError(next);
+				throw next;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[],
+	);
 
-  const runSafely = useCallback(
-    async <T,>(operation: () => Promise<T>): Promise<T> => {
-      setIsLoading(true)
-      setError(null)
+	const openAuth = useCallback(
+		async (url: string, redirectUrl: string, options?: InAppBrowserOptions) => {
+			setIsLoading(true);
+			setError(null);
+			try {
+				return await nativeOpenAuth(url, redirectUrl, options);
+			} catch (err) {
+				const next = toError(err);
+				setError(next);
+				throw next;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[],
+	);
 
-      try {
-        const result = await operation()
-        if (isMountedRef.current) {
-          setIsLoading(false)
-        }
-        return result
-      } catch (err) {
-        const currentError =
-          err instanceof Error ? err : new Error(String(err))
-        if (isMountedRef.current) {
-          setError(currentError)
-          setIsLoading(false)
-        }
-        throw currentError
-      }
-    },
-    []
-  )
-
-  const open = useCallback(
-    (url: string, options?: InAppBrowserOptions) =>
-      runSafely(() => nativeOpen(url, options)),
-    [runSafely]
-  )
-
-  const openAuth = useCallback(
-    (url: string, redirectUrl: string, options?: InAppBrowserOptions) =>
-      runSafely(() => nativeOpenAuth(url, redirectUrl, options)),
-    [runSafely]
-  )
-
-  const close = useCallback(() => nativeClose(), [])
-
-  const closeAuth = useCallback(() => nativeCloseAuth(), [])
-
-  const isAvailable = useCallback(() => nativeIsAvailable(), [])
-
-  return {
-    open,
-    openAuth,
-    close,
-    closeAuth,
-    isAvailable,
-    isLoading,
-    error,
-  }
-}
+	return useMemo<UseInAppBrowserReturn>(
+		() => ({
+			open,
+			openAuth,
+			close: nativeClose,
+			closeAuth: nativeCloseAuth,
+			isAvailable: nativeIsAvailable,
+			isLoading,
+			error,
+		}),
+		[open, openAuth, isLoading, error],
+	);
+};

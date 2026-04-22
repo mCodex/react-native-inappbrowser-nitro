@@ -1,133 +1,123 @@
 import type {
-  BrowserAnimations,
-  DynamicColor,
-  InAppBrowserOptions,
-} from '../types'
-
-const COLOR_OPTION_KEYS = new Set<keyof InAppBrowserOptions>([
-  'preferredBarTintColor',
-  'preferredControlTintColor',
-  'toolbarColor',
-  'secondaryToolbarColor',
-  'navigationBarColor',
-  'navigationBarDividerColor',
-])
-
-const sanitizeColor = (value: DynamicColor | string | undefined) => {
-  if (!value) {
-    return undefined
-  }
-
-  if (typeof value === 'string') {
-    const trimmed = value.trim()
-    return trimmed ? { base: trimmed } : undefined
-  }
-
-  const payload: DynamicColor = {}
-
-  if (value.base?.trim()) {
-    payload.base = value.base.trim()
-  }
-  if (value.light?.trim()) {
-    payload.light = value.light.trim()
-  }
-  if (value.dark?.trim()) {
-    payload.dark = value.dark.trim()
-  }
-  if (value.highContrast?.trim()) {
-    payload.highContrast = value.highContrast.trim()
-  }
-
-  return Object.keys(payload).length > 0 ? payload : undefined
-}
-
-const sanitizeAnimations = (animations?: BrowserAnimations) => {
-  if (!animations) {
-    return undefined
-  }
-
-  const sanitized: BrowserAnimations = {}
-  if (animations.startEnter?.trim()) {
-    sanitized.startEnter = animations.startEnter.trim()
-  }
-  if (animations.startExit?.trim()) {
-    sanitized.startExit = animations.startExit.trim()
-  }
-  if (animations.endEnter?.trim()) {
-    sanitized.endEnter = animations.endEnter.trim()
-  }
-  if (animations.endExit?.trim()) {
-    sanitized.endExit = animations.endExit.trim()
-  }
-
-  return Object.keys(sanitized).length > 0 ? sanitized : undefined
-}
-
-const sanitizeHeaders = (headers?: Record<string, string>) => {
-  if (!headers) {
-    return undefined
-  }
-
-  const sanitized: Record<string, string> = {}
-  for (const [key, currentValue] of Object.entries(headers)) {
-    if (typeof currentValue !== 'string') {
-      continue
-    }
-
-    const normalizedKey = key.trim()
-    if (!normalizedKey) {
-      continue
-    }
-
-    sanitized[normalizedKey] = currentValue
-  }
-
-  return Object.keys(sanitized).length > 0 ? sanitized : undefined
-}
+	BrowserAnimations,
+	DynamicColor,
+	InAppBrowserOptions,
+} from "../types";
 
 /**
- * Remove undefined entries and sanitize nested values before hitting native.
+ * Return `obj` when it has at least one own key, otherwise `undefined`.
+ * Used to elide empty nested payloads before they cross JSI.
  */
-export const normalizeOptions = (options?: InAppBrowserOptions) => {
-  if (!options) {
-    return undefined
-  }
+const compact = <T extends object>(obj: T): T | undefined =>
+	Object.keys(obj).length > 0 ? obj : undefined;
 
-  const sanitized: InAppBrowserOptions = {}
+/**
+ * Copy whitelisted string fields from `source` into a new object, trimming
+ * each value and dropping empty or non-string entries.
+ */
+const trimStringFields = <T extends object>(
+	source: T,
+	keys: readonly (keyof T)[],
+): Partial<T> => {
+	const out: Partial<T> = {};
+	for (const key of keys) {
+		const value = source[key];
+		if (typeof value === "string") {
+			const trimmed = value.trim();
+			if (trimmed) {
+				out[key] = trimmed as T[keyof T];
+			}
+		}
+	}
+	return out;
+};
 
-  for (const [key, value] of Object.entries(options)) {
-    if (value === undefined || value === null) {
-      continue
-    }
+const DYNAMIC_COLOR_KEYS = [
+	"base",
+	"light",
+	"dark",
+	"highContrast",
+] as const satisfies readonly (keyof DynamicColor)[];
 
-    const typedKey = key as keyof InAppBrowserOptions
+const ANIMATION_KEYS = [
+	"startEnter",
+	"startExit",
+	"endEnter",
+	"endExit",
+] as const satisfies readonly (keyof BrowserAnimations)[];
 
-    if (COLOR_OPTION_KEYS.has(typedKey)) {
-      const normalizedColor = sanitizeColor(value as string | DynamicColor)
-      if (normalizedColor) {
-        ;(sanitized as Record<string, unknown>)[typedKey] = normalizedColor
-      }
-      continue
-    }
+const sanitizeColor = (value: DynamicColor): DynamicColor | undefined =>
+	compact(trimStringFields(value, DYNAMIC_COLOR_KEYS));
 
-    if (typedKey === 'headers') {
-      const normalizedHeaders = sanitizeHeaders(value as Record<string, string>)
-      if (normalizedHeaders) {
-        sanitized.headers = normalizedHeaders
-      }
-      continue
-    }
+const sanitizeAnimations = (
+	value: BrowserAnimations,
+): BrowserAnimations | undefined =>
+	compact(trimStringFields(value, ANIMATION_KEYS));
 
-    if (typedKey === 'animations') {
-      const normalizedAnimations = sanitizeAnimations(value as BrowserAnimations)
-      if (normalizedAnimations) {
-        sanitized.animations = normalizedAnimations
-      }
-      continue
-    }
+const sanitizeHeaders = (
+	headers: Record<string, string>,
+): Record<string, string> | undefined => {
+	const out: Record<string, string> = {};
+	for (const key of Object.keys(headers)) {
+		const value = headers[key];
+		if (typeof value !== "string") continue;
+		const normalizedKey = key.trim();
+		if (!normalizedKey) continue;
+		out[normalizedKey] = value;
+	}
+	return compact(out);
+};
 
-    ;(sanitized as Record<string, unknown>)[typedKey] = value
-  }
+/**
+ * Per-key normalizers. Each handler receives the raw value and returns the
+ * sanitized value, or `undefined` to omit the field entirely.
+ */
+type Normalizer<K extends keyof InAppBrowserOptions> = (
+	value: NonNullable<InAppBrowserOptions[K]>,
+) => InAppBrowserOptions[K];
 
-  return Object.keys(sanitized).length > 0 ? sanitized : undefined
-}
+type NormalizerMap = {
+	[K in keyof InAppBrowserOptions]?: Normalizer<K>;
+};
+
+const NORMALIZERS: NormalizerMap = {
+	preferredBarTintColor: sanitizeColor,
+	preferredControlTintColor: sanitizeColor,
+	toolbarColor: sanitizeColor,
+	secondaryToolbarColor: sanitizeColor,
+	navigationBarColor: sanitizeColor,
+	navigationBarDividerColor: sanitizeColor,
+	headers: sanitizeHeaders,
+	animations: sanitizeAnimations,
+};
+
+/**
+ * Remove `undefined`/`null` entries and sanitize nested values before the
+ * options object is bridged to the native hybrid module.
+ *
+ * Fast path: when no options are supplied, returns `undefined` without any
+ * allocations.
+ */
+export const normalizeOptions = (
+	options?: InAppBrowserOptions,
+): InAppBrowserOptions | undefined => {
+	if (!options) return undefined;
+
+	const out: InAppBrowserOptions = {};
+	for (const key of Object.keys(options)) {
+		const typedKey = key as keyof InAppBrowserOptions;
+		const value = options[typedKey];
+		if (value === undefined || value === null) continue;
+
+		const normalizer = NORMALIZERS[typedKey] as
+			| ((v: unknown) => unknown)
+			| undefined;
+		const next = normalizer ? normalizer(value) : value;
+		if (next === undefined) continue;
+
+		// Per-key correctness is guaranteed by the typed `NORMALIZERS` map above.
+		(out as Record<string, unknown>)[typedKey] = next;
+	}
+
+	return compact(out);
+};
