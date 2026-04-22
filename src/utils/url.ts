@@ -5,7 +5,11 @@ const SCHEME_PATTERN = /^([a-z][a-z0-9+.-]*):/i
  * Validate a URL string before passing it to the native layer.
  * Throws if the URL is empty, missing a scheme, or uses an unsafe scheme.
  */
-export const validateUrl = (candidate: string): string => {
+export const validateUrl = (candidate: unknown): string => {
+  if (typeof candidate !== 'string') {
+    throw new TypeError('URL must be a string.')
+  }
+
   const trimmed = candidate.trim()
 
   if (!trimmed) {

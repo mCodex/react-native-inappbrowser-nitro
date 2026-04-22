@@ -64,6 +64,7 @@ final class AuthSessionManager: NSObject {
 }
 
 private final class AuthPresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
+  @MainActor
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
     UIApplication.shared.nitroTopMostViewController?.view.window ?? UIWindow()
   }

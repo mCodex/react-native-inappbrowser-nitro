@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   close as nativeClose,
@@ -53,18 +53,30 @@ export const useInAppBrowser = (): UseInAppBrowserReturn => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
+  // Guard against "state update on unmounted component" warnings when an
+  // in-flight open/openAuth resolves after the consumer unmounts.
+  const isMountedRef = useRef(true)
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
   const open = useCallback(
     async (url: string, options?: InAppBrowserOptions) => {
-      setIsLoading(true)
-      setError(null)
+      if (isMountedRef.current) {
+        setIsLoading(true)
+        setError(null)
+      }
       try {
         return await nativeOpen(url, options)
       } catch (err) {
         const next = toError(err)
-        setError(next)
+        if (isMountedRef.current) setError(next)
         throw next
       } finally {
-        setIsLoading(false)
+        if (isMountedRef.current) setIsLoading(false)
       }
     },
     []
@@ -72,16 +84,18 @@ export const useInAppBrowser = (): UseInAppBrowserReturn => {
 
   const openAuth = useCallback(
     async (url: string, redirectUrl: string, options?: InAppBrowserOptions) => {
-      setIsLoading(true)
-      setError(null)
+      if (isMountedRef.current) {
+        setIsLoading(true)
+        setError(null)
+      }
       try {
         return await nativeOpenAuth(url, redirectUrl, options)
       } catch (err) {
         const next = toError(err)
-        setError(next)
+        if (isMountedRef.current) setError(next)
         throw next
       } finally {
-        setIsLoading(false)
+        if (isMountedRef.current) setIsLoading(false)
       }
     },
     []
