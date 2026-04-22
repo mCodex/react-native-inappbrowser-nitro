@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const path = require('path')
-const { promises: fs } = require('fs')
+const path = require('node:path')
+const { promises: fs } = require('node:fs')
 
 async function removeMaps(directory) {
   const entries = await fs.readdir(directory, { withFileTypes: true })

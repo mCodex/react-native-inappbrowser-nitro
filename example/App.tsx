@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Platform,
   SafeAreaView,
@@ -7,49 +7,49 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from 'react-native'
 import {
   BrowserShareState,
   type InAppBrowserResult,
   isAvailable,
   useInAppBrowser,
-} from 'react-native-inappbrowser-nitro';
+} from 'react-native-inappbrowser-nitro'
 
-const REPO_URL = 'https://github.com/mCodex/react-native-inappbrowser-nitro';
-const AUTH_REDIRECT_URL = 'inappbrowsernitro://callback';
-const AUTH_URL = `https://httpbin.org/redirect-to?url=${encodeURIComponent(AUTH_REDIRECT_URL)}`;
+const REPO_URL = 'https://github.com/mCodex/react-native-inappbrowser-nitro'
+const AUTH_REDIRECT_URL = 'inappbrowsernitro://callback'
+const AUTH_URL = `https://httpbin.org/redirect-to?url=${encodeURIComponent(AUTH_REDIRECT_URL)}`
 
 const toolbarPalette = {
   base: '#2563EB',
   dark: '#1E3A8A',
   highContrast: '#1D4ED8',
-};
+}
 
 const controlPalette = {
   base: '#FFFFFF',
   highContrast: '#FFD700',
-};
+}
 
 const ios26ShowcasePalette = {
   base: '#F97316',
   light: '#FDBA74',
   dark: '#7C3AED',
   highContrast: '#DC2626',
-};
+}
 
 const ios26ControlPalette = {
   base: '#0F172A',
   light: '#1E293B',
   dark: '#F8FAFC',
   highContrast: '#0EA5E9',
-};
+}
 
 type ExampleButtonProps = {
-  label: string;
-  onPress: () => Promise<void> | void;
-  disabled?: boolean;
-  tone?: 'primary' | 'secondary';
-};
+  label: string
+  onPress: () => Promise<void> | void
+  disabled?: boolean
+  tone?: 'primary' | 'secondary'
+}
 
 const ExampleButton = ({
   label,
@@ -59,10 +59,10 @@ const ExampleButton = ({
 }: ExampleButtonProps) => {
   const backgroundStyle = useMemo(() => {
     if (disabled) {
-      return styles.buttonDisabled;
+      return styles.buttonDisabled
     }
-    return tone === 'primary' ? styles.buttonPrimary : styles.buttonSecondary;
-  }, [disabled, tone]);
+    return tone === 'primary' ? styles.buttonPrimary : styles.buttonSecondary
+  }, [disabled, tone])
 
   return (
     <TouchableOpacity
@@ -72,41 +72,43 @@ const ExampleButton = ({
     >
       <Text style={styles.buttonText}>{label}</Text>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
 const formatResult = (result: InAppBrowserResult) => {
-  const parts = [`type: ${result.type}`];
+  const parts = [`type: ${result.type}`]
   if (result.url) {
-    parts.push(`url: ${result.url}`);
+    parts.push(`url: ${result.url}`)
   }
   if (result.message) {
-    parts.push(`message: ${result.message}`);
+    parts.push(`message: ${result.message}`)
   }
-  return parts.join(' • ');
-};
+  return parts.join(' • ')
+}
 
 const formatError = (err: unknown) => {
   if (err instanceof Error) {
-    return `error: ${err.message}`;
+    return `error: ${err.message}`
   }
-  return `error: ${String(err)}`;
-};
+  return `error: ${String(err)}`
+}
 
 function App(): React.JSX.Element {
-  const { open, openAuth, close, isLoading, error } = useInAppBrowser();
-  const [isSupported, setIsSupported] = useState<boolean | null>(null);
-  const [log, setLog] = useState<string[]>([]);
+  const { open, openAuth, close, isLoading, error } = useInAppBrowser()
+  const [isSupported, setIsSupported] = useState<boolean | null>(null)
+  const [log, setLog] = useState<{ id: number; text: string }[]>([])
+  const logIdRef = useRef(0)
 
   useEffect(() => {
     isAvailable()
       .then(setIsSupported)
-      .catch(() => setIsSupported(false));
-  }, []);
+      .catch(() => setIsSupported(false))
+  }, [])
 
   const pushLog = useCallback((message: string) => {
-    setLog((current) => [message, ...current].slice(0, 6));
-  }, []);
+    const id = ++logIdRef.current
+    setLog((current) => [{ id, text: message }, ...current].slice(0, 6))
+  }, [])
 
   const handleOpenDocs = useCallback(async () => {
     try {
@@ -122,13 +124,13 @@ function App(): React.JSX.Element {
         enablePullToRefresh: true,
         includeReferrer: true,
         shareState: BrowserShareState.Off,
-      });
+      })
 
-      pushLog(formatResult(result));
+      pushLog(formatResult(result))
     } catch (err) {
-      pushLog(formatError(err));
+      pushLog(formatError(err))
     }
-  }, [open, pushLog]);
+  }, [open, pushLog])
 
   const handleOpenReader = useCallback(async () => {
     try {
@@ -139,13 +141,13 @@ function App(): React.JSX.Element {
         preferredBarTintColor: { base: '#FFFFFF', dark: '#111827' },
         preferredControlTintColor: controlPalette,
         enableEdgeDismiss: true,
-      });
+      })
 
-      pushLog(formatResult(result));
+      pushLog(formatResult(result))
     } catch (err) {
-      pushLog(formatError(err));
+      pushLog(formatError(err))
     }
-  }, [open, pushLog]);
+  }, [open, pushLog])
 
   const handleOpenIos26Palette = useCallback(async () => {
     try {
@@ -157,13 +159,13 @@ function App(): React.JSX.Element {
         dismissButtonStyle: 'done',
         enableEdgeDismiss: false,
         formSheetPreferredContentSize: { width: 414, height: 720 },
-      });
+      })
 
-      pushLog(`iOS 26 palette • ${formatResult(result)}`);
+      pushLog(`iOS 26 palette • ${formatResult(result)}`)
     } catch (err) {
-      pushLog(formatError(err));
+      pushLog(formatError(err))
     }
-  }, [open, pushLog]);
+  }, [open, pushLog])
 
   const handleAuth = useCallback(async () => {
     try {
@@ -173,32 +175,32 @@ function App(): React.JSX.Element {
         preferredBarTintColor: toolbarPalette,
         toolbarColor: toolbarPalette,
         includeReferrer: true,
-      });
+      })
 
-      pushLog(formatResult(result));
+      pushLog(formatResult(result))
     } catch (err) {
-      pushLog(formatError(err));
+      pushLog(formatError(err))
     }
-  }, [openAuth, pushLog]);
+  }, [openAuth, pushLog])
 
   const handleClose = useCallback(async () => {
     try {
-      await close();
-      pushLog('close(): requested dismissal');
+      await close()
+      pushLog('close(): requested dismissal')
     } catch (err) {
-      pushLog(formatError(err));
+      pushLog(formatError(err))
     }
-  }, [close, pushLog]);
+  }, [close, pushLog])
 
   const supportCopy = useMemo(() => {
     if (isSupported === null) {
-      return 'Checking native availability…';
+      return 'Checking native availability…'
     }
     if (!isSupported) {
-      return 'Native browser support is unavailable on this device/emulator.';
+      return 'Native browser support is unavailable on this device/emulator.'
     }
-    return 'Native browser support detected.';
-  }, [isSupported]);
+    return 'Native browser support detected.'
+  }, [isSupported])
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -277,8 +279,8 @@ function App(): React.JSX.Element {
             </Text>
           ) : (
             log.map((entry, index) => (
-              <Text key={`${entry}-${index}`} style={styles.logLine}>
-                {index + 1}. {entry}
+              <Text key={entry.id} style={styles.logLine}>
+                {index + 1}. {entry.text}
               </Text>
             ))
           )}
@@ -295,7 +297,7 @@ function App(): React.JSX.Element {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -371,6 +373,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Courier',
     color: '#38BDF8',
   },
-});
+})
 
-export default App;
+export default App

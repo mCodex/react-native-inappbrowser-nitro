@@ -1,8 +1,8 @@
-const path = require('path');
-const pak = require('../package.json');
+const path = require('node:path')
+const pak = require('../package.json')
 
 module.exports = (api) => {
-  api.cache(true);
+  api.cache(true)
   return {
     presets: ['module:@react-native/babel-preset'],
     plugins: [
@@ -16,5 +16,5 @@ module.exports = (api) => {
         },
       ],
     ],
-  };
-};
+  }
+}

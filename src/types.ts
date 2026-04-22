@@ -4,194 +4,194 @@
  * Discrete result types returned by the native browser implementations.
  */
 export const BrowserResultType = {
-	/** User actively dismissed the browser (tap on Done/Close/back). */
-	Cancel: "cancel",
-	/** Browser closed due to an error or system level interruption. */
-	Dismiss: "dismiss",
-	/** Browser launched successfully. */
-	Success: "success",
-} as const;
+  /** User actively dismissed the browser (tap on Done/Close/back). */
+  Cancel: 'cancel',
+  /** Browser closed due to an error or system level interruption. */
+  Dismiss: 'dismiss',
+  /** Browser launched successfully. */
+  Success: 'success',
+} as const
 
 export type BrowserResultType =
-	(typeof BrowserResultType)[keyof typeof BrowserResultType];
+  (typeof BrowserResultType)[keyof typeof BrowserResultType]
 
 /**
  * iOS dismiss button appearance options.
  */
 export const DismissButtonStyle = {
-	Done: "done",
-	Close: "close",
-	Cancel: "cancel",
-} as const;
+  Done: 'done',
+  Close: 'close',
+  Cancel: 'cancel',
+} as const
 
 export type DismissButtonStyle =
-	(typeof DismissButtonStyle)[keyof typeof DismissButtonStyle];
+  (typeof DismissButtonStyle)[keyof typeof DismissButtonStyle]
 
 /**
  * iOS presentation styles exposed by Safari Services.
  */
 export const ModalPresentationStyle = {
-	Automatic: "automatic",
-	None: "none",
-	FullScreen: "fullScreen",
-	PageSheet: "pageSheet",
-	FormSheet: "formSheet",
-	CurrentContext: "currentContext",
-	Custom: "custom",
-	OverFullScreen: "overFullScreen",
-	OverCurrentContext: "overCurrentContext",
-	Popover: "popover",
-} as const;
+  Automatic: 'automatic',
+  None: 'none',
+  FullScreen: 'fullScreen',
+  PageSheet: 'pageSheet',
+  FormSheet: 'formSheet',
+  CurrentContext: 'currentContext',
+  Custom: 'custom',
+  OverFullScreen: 'overFullScreen',
+  OverCurrentContext: 'overCurrentContext',
+  Popover: 'popover',
+} as const
 
 export type ModalPresentationStyle =
-	(typeof ModalPresentationStyle)[keyof typeof ModalPresentationStyle];
+  (typeof ModalPresentationStyle)[keyof typeof ModalPresentationStyle]
 
 /**
  * iOS transition styles available when presenting Safari.
  */
 export const ModalTransitionStyle = {
-	CoverVertical: "coverVertical",
-	FlipHorizontal: "flipHorizontal",
-	CrossDissolve: "crossDissolve",
-	PartialCurl: "partialCurl",
-} as const;
+  CoverVertical: 'coverVertical',
+  FlipHorizontal: 'flipHorizontal',
+  CrossDissolve: 'crossDissolve',
+  PartialCurl: 'partialCurl',
+} as const
 
 export type ModalTransitionStyle =
-	(typeof ModalTransitionStyle)[keyof typeof ModalTransitionStyle];
+  (typeof ModalTransitionStyle)[keyof typeof ModalTransitionStyle]
 
 /**
  * Android Custom Tabs color scheme modes.
  */
 export const BrowserColorScheme = {
-	System: "system",
-	Light: "light",
-	Dark: "dark",
-} as const;
+  System: 'system',
+  Light: 'light',
+  Dark: 'dark',
+} as const
 
 export type BrowserColorScheme =
-	(typeof BrowserColorScheme)[keyof typeof BrowserColorScheme];
+  (typeof BrowserColorScheme)[keyof typeof BrowserColorScheme]
 
 /**
  * Android Custom Tabs share state visibility.
  */
 export const BrowserShareState = {
-	Default: "default",
-	On: "on",
-	Off: "off",
-} as const;
+  Default: 'default',
+  On: 'on',
+  Off: 'off',
+} as const
 
 export type BrowserShareState =
-	(typeof BrowserShareState)[keyof typeof BrowserShareState];
+  (typeof BrowserShareState)[keyof typeof BrowserShareState]
 
 export const StatusBarStyle = {
-	Default: "default",
-	LightContent: "lightContent",
-	DarkContent: "darkContent",
-} as const;
+  Default: 'default',
+  LightContent: 'lightContent',
+  DarkContent: 'darkContent',
+} as const
 
 export type StatusBarStyle =
-	(typeof StatusBarStyle)[keyof typeof StatusBarStyle];
+  (typeof StatusBarStyle)[keyof typeof StatusBarStyle]
 
 export const UserInterfaceStyle = {
-	Unspecified: "unspecified",
-	Light: "light",
-	Dark: "dark",
-} as const;
+  Unspecified: 'unspecified',
+  Light: 'light',
+  Dark: 'dark',
+} as const
 
 export type UserInterfaceStyle =
-	(typeof UserInterfaceStyle)[keyof typeof UserInterfaceStyle];
+  (typeof UserInterfaceStyle)[keyof typeof UserInterfaceStyle]
 
 /**
  * Compact description of a color palette for light/dark/high-contrast modes.
  */
 export interface DynamicColor {
-	/** Primary color used regardless of theme (fallback). */
-	base?: string;
-	/** Primary color used for light interfaces. */
-	light?: string;
-	/** Primary color used for dark interfaces. */
-	dark?: string;
-	/** High contrast override applied when available (iOS 26+, Android 16+). */
-	highContrast?: string;
+  /** Primary color used regardless of theme (fallback). */
+  base?: string
+  /** Primary color used for light interfaces. */
+  light?: string
+  /** Primary color used for dark interfaces. */
+  dark?: string
+  /** High contrast override applied when available (iOS 26+, Android 16+). */
+  highContrast?: string
 }
 
 /**
  * Reader mode result sizing used when presenting as a form sheet.
  */
 export interface FormSheetContentSize {
-	width: number;
-	height: number;
+  width: number
+  height: number
 }
 
 /**
  * iOS specific presentation and styling options.
  */
 export interface InAppBrowserIOSOptions {
-	dismissButtonStyle?: DismissButtonStyle;
-	preferredBarTintColor?: DynamicColor;
-	preferredControlTintColor?: DynamicColor;
-	preferredStatusBarStyle?: StatusBarStyle;
-	readerMode?: boolean;
-	animated?: boolean;
-	modalPresentationStyle?: ModalPresentationStyle;
-	modalTransitionStyle?: ModalTransitionStyle;
-	modalEnabled?: boolean;
-	enableBarCollapsing?: boolean;
-	ephemeralWebSession?: boolean;
-	enableEdgeDismiss?: boolean;
-	overrideUserInterfaceStyle?: UserInterfaceStyle;
-	formSheetPreferredContentSize?: FormSheetContentSize;
+  dismissButtonStyle?: DismissButtonStyle
+  preferredBarTintColor?: DynamicColor
+  preferredControlTintColor?: DynamicColor
+  preferredStatusBarStyle?: StatusBarStyle
+  readerMode?: boolean
+  animated?: boolean
+  modalPresentationStyle?: ModalPresentationStyle
+  modalTransitionStyle?: ModalTransitionStyle
+  modalEnabled?: boolean
+  enableBarCollapsing?: boolean
+  ephemeralWebSession?: boolean
+  enableEdgeDismiss?: boolean
+  overrideUserInterfaceStyle?: UserInterfaceStyle
+  formSheetPreferredContentSize?: FormSheetContentSize
 }
 
 /**
  * Declarative animation configuration for Android Custom Tabs.
  */
 export interface BrowserAnimations {
-	startEnter?: string;
-	startExit?: string;
-	endEnter?: string;
-	endExit?: string;
+  startEnter?: string
+  startExit?: string
+  endEnter?: string
+  endExit?: string
 }
 
 /**
  * Android specific presentation and styling options.
  */
 export interface InAppBrowserAndroidOptions {
-	showTitle?: boolean;
-	toolbarColor?: DynamicColor;
-	secondaryToolbarColor?: DynamicColor;
-	navigationBarColor?: DynamicColor;
-	navigationBarDividerColor?: DynamicColor;
-	enableUrlBarHiding?: boolean;
-	enableDefaultShare?: boolean;
-	shareState?: BrowserShareState;
-	colorScheme?: BrowserColorScheme;
-	headers?: Record<string, string>;
-	forceCloseOnRedirection?: boolean;
-	hasBackButton?: boolean;
-	browserPackage?: string;
-	showInRecents?: boolean;
-	includeReferrer?: boolean;
-	instantAppsEnabled?: boolean;
-	enablePullToRefresh?: boolean;
-	enablePartialCustomTab?: boolean;
-	animations?: BrowserAnimations;
+  showTitle?: boolean
+  toolbarColor?: DynamicColor
+  secondaryToolbarColor?: DynamicColor
+  navigationBarColor?: DynamicColor
+  navigationBarDividerColor?: DynamicColor
+  enableUrlBarHiding?: boolean
+  enableDefaultShare?: boolean
+  shareState?: BrowserShareState
+  colorScheme?: BrowserColorScheme
+  headers?: Record<string, string>
+  forceCloseOnRedirection?: boolean
+  hasBackButton?: boolean
+  browserPackage?: string
+  showInRecents?: boolean
+  includeReferrer?: boolean
+  instantAppsEnabled?: boolean
+  enablePullToRefresh?: boolean
+  enablePartialCustomTab?: boolean
+  animations?: BrowserAnimations
 }
 
 /**
  * Aggregated cross-platform options.
  */
 export interface InAppBrowserOptions
-	extends InAppBrowserIOSOptions,
-		InAppBrowserAndroidOptions {}
+  extends InAppBrowserIOSOptions,
+    InAppBrowserAndroidOptions {}
 
 /**
  * Result payload returned by imperative API calls.
  */
 export interface InAppBrowserResult {
-	type: BrowserResultType;
-	url?: string;
-	message?: string;
+  type: BrowserResultType
+  url?: string
+  message?: string
 }
 
 /**

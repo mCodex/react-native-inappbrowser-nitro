@@ -76,4 +76,10 @@ android/keystores/debug.keystore
 lib/
 tsconfig.tsbuildinfo
 
+# stray tsc output in sources (should never be committed)
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+src/**/*.d.ts.map
+
 nitrogen/
