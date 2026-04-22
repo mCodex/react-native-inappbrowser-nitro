@@ -1,13 +1,8 @@
 import UIKit
 
 extension UIApplication {
+  @MainActor
   var nitroTopMostViewController: UIViewController? {
-    guard Thread.isMainThread else {
-      return DispatchQueue.main.sync {
-        self.nitroTopMostViewController
-      }
-    }
-
     let windowScene = connectedScenes
       .compactMap { $0 as? UIWindowScene }
       .flatMap { $0.windows }

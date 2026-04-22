@@ -4,6 +4,7 @@
   "exclude": ["**/node_modules", "**/Pods"],
   "compilerOptions": {
     "strict": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "react-native-inappbrowser-nitro": ["../src"]

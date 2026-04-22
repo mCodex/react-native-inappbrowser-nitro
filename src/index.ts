@@ -1,29 +1,22 @@
-import { InAppBrowser } from './core/InAppBrowser'
-import { useInAppBrowser } from './hooks/useInAppBrowser'
-
-import type {
-  InAppBrowserAuthResult,
-  InAppBrowserOptions,
-  InAppBrowserResult,
-  InAppBrowserAndroidOptions,
-  InAppBrowserIOSOptions,
+export {
+  close,
+  closeAuth,
+  isAvailable,
+  open,
+  openAuth,
+} from './core/native'
+export type { UseInAppBrowserReturn } from './hooks/useInAppBrowser'
+export { useInAppBrowser } from './hooks/useInAppBrowser'
+export type {
   BrowserAnimations,
   DynamicColor,
-} from './specs/inappbrowser-nitro.nitro'
-import {
-  BrowserColorScheme,
-  BrowserResultType,
-  BrowserShareState,
-  DismissButtonStyle,
-  ModalPresentationStyle,
-  ModalTransitionStyle,
-  StatusBarStyle,
-  UserInterfaceStyle,
-} from './specs/inappbrowser-nitro.nitro'
-
-InAppBrowser.useInAppBrowser = useInAppBrowser
-
-export { InAppBrowser, useInAppBrowser }
+  FormSheetContentSize,
+  InAppBrowserAndroidOptions,
+  InAppBrowserAuthResult,
+  InAppBrowserIOSOptions,
+  InAppBrowserOptions,
+  InAppBrowserResult,
+} from './types'
 export {
   BrowserColorScheme,
   BrowserResultType,
@@ -33,13 +26,4 @@ export {
   ModalTransitionStyle,
   StatusBarStyle,
   UserInterfaceStyle,
-}
-export type {
-  InAppBrowserAuthResult,
-  InAppBrowserOptions,
-  InAppBrowserResult,
-  InAppBrowserAndroidOptions,
-  InAppBrowserIOSOptions,
-  BrowserAnimations,
-  DynamicColor,
-}
+} from './types'

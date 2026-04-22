@@ -88,7 +88,10 @@ final class SafariPresenter: NSObject {
     }
 
     if let formSize = options?.formSheetPreferredContentSize {
-      controller.preferredContentSize = CGSize(width: CGFloat(formSize.width), height: CGFloat(formSize.height))
+      controller.preferredContentSize = CGSize(
+        width: CGFloat(formSize.width),
+        height: CGFloat(formSize.height)
+      )
     }
 
     if let presentation = options?.modalPresentationStyle {
@@ -107,11 +110,16 @@ final class SafariPresenter: NSObject {
 private final class NitroSafariViewController: SFSafariViewController {
   private let resolvedStatusBarStyle: UIStatusBarStyle?
 
-  init(url: URL, configuration: SFSafariViewController.Configuration, statusBarStyle: UIStatusBarStyle?, userInterfaceStyle: UIUserInterfaceStyle?) {
+  init(
+    url: URL,
+    configuration: SFSafariViewController.Configuration,
+    statusBarStyle: UIStatusBarStyle?,
+    userInterfaceStyle: UIUserInterfaceStyle?
+  ) {
     resolvedStatusBarStyle = statusBarStyle
     super.init(url: url, configuration: configuration)
 
-    if let userInterfaceStyle, #available(iOS 13.0, *) {
+    if let userInterfaceStyle {
       overrideUserInterfaceStyle = userInterfaceStyle
     }
   }
@@ -137,93 +145,56 @@ private final class SafariDismissDelegate: NSObject, SFSafariViewControllerDeleg
 private enum SafariStyleMapper {
   static func dismissButtonStyle(from style: DismissButtonStyle) -> SFSafariViewController.DismissButtonStyle {
     switch style {
-    case .cancel:
-      return .cancel
-    case .done:
-      return .done
-    case .close:
-      return .close
-    @unknown default:
-      return .done
+    case .cancel: return .cancel
+    case .done: return .done
+    case .close: return .close
+    @unknown default: return .done
     }
   }
 
   static func presentationStyle(from style: ModalPresentationStyle) -> UIModalPresentationStyle {
     switch style {
-    case .automatic:
-      if #available(iOS 13.0, *) {
-        return .automatic
-      }
-      return .fullScreen
-    case .none:
-      return .none
-    case .fullscreen:
-      return .fullScreen
-    case .pagesheet:
-      if #available(iOS 13.0, *) {
-        return .pageSheet
-      }
-      return .formSheet
-    case .formsheet:
-      return .formSheet
-    case .currentcontext:
-      return .currentContext
-    case .custom:
-      return .custom
-    case .overfullscreen:
-      return .overFullScreen
-    case .overcurrentcontext:
-      return .overCurrentContext
-    case .popover:
-      return .popover
-    @unknown default:
-      return .automatic
+    case .automatic: return .automatic
+    case .none: return .none
+    case .fullscreen: return .fullScreen
+    case .pagesheet: return .pageSheet
+    case .formsheet: return .formSheet
+    case .currentcontext: return .currentContext
+    case .custom: return .custom
+    case .overfullscreen: return .overFullScreen
+    case .overcurrentcontext: return .overCurrentContext
+    case .popover: return .popover
+    @unknown default: return .automatic
     }
   }
 
   static func transitionStyle(from style: ModalTransitionStyle) -> UIModalTransitionStyle {
     switch style {
-    case .coververtical:
-      return .coverVertical
-    case .fliphorizontal:
-      return .flipHorizontal
-    case .crossdissolve:
-      return .crossDissolve
-    case .partialcurl:
-      return .partialCurl
-    @unknown default:
-      return .coverVertical
+    case .coververtical: return .coverVertical
+    case .fliphorizontal: return .flipHorizontal
+    case .crossdissolve: return .crossDissolve
+    case .partialcurl: return .partialCurl
+    @unknown default: return .coverVertical
     }
   }
 
   static func statusBarStyle(from style: StatusBarStyle?) -> UIStatusBarStyle? {
     guard let style else { return nil }
     switch style {
-    case .default:
-      return .default
-    case .lightcontent:
-      return .lightContent
-    case .darkcontent:
-      if #available(iOS 13.0, *) {
-        return .darkContent
-      }
-      return .default
-    @unknown default:
-      return nil
+    case .default: return .default
+    case .lightcontent: return .lightContent
+    case .darkcontent: return .darkContent
+    @unknown default: return nil
     }
   }
 
   static func interfaceStyle(from style: UserInterfaceStyle?) -> UIUserInterfaceStyle? {
-    guard let style, #available(iOS 13.0, *) else { return nil }
+    guard let style else { return nil }
     switch style {
-    case .unspecified:
-      return .unspecified
-    case .light:
-      return .light
-    case .dark:
-      return .dark
-    @unknown default:
-      return nil
+    case .unspecified: return .unspecified
+    case .light: return .light
+    case .dark: return .dark
+    @unknown default: return nil
     }
   }
 }

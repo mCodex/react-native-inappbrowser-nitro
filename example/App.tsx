@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Platform,
   SafeAreaView,
@@ -9,12 +9,11 @@ import {
   View,
 } from 'react-native'
 import {
-  InAppBrowser,
-  useInAppBrowser,
   BrowserShareState,
+  type InAppBrowserResult,
+  isAvailable,
+  useInAppBrowser,
 } from 'react-native-inappbrowser-nitro'
-
-import type { InAppBrowserResult } from 'react-native-inappbrowser-nitro'
 
 const REPO_URL = 'https://github.com/mCodex/react-native-inappbrowser-nitro'
 const AUTH_REDIRECT_URL = 'inappbrowsernitro://callback'
@@ -52,7 +51,12 @@ type ExampleButtonProps = {
   tone?: 'primary' | 'secondary'
 }
 
-const ExampleButton = ({ label, onPress, disabled, tone = 'primary' }: ExampleButtonProps) => {
+const ExampleButton = ({
+  label,
+  onPress,
+  disabled,
+  tone = 'primary',
+}: ExampleButtonProps) => {
   const backgroundStyle = useMemo(() => {
     if (disabled) {
       return styles.buttonDisabled
@@ -61,7 +65,11 @@ const ExampleButton = ({ label, onPress, disabled, tone = 'primary' }: ExampleBu
   }, [disabled, tone])
 
   return (
-    <TouchableOpacity style={[styles.button, backgroundStyle]} onPress={onPress} disabled={disabled}>
+    <TouchableOpacity
+      style={[styles.button, backgroundStyle]}
+      onPress={onPress}
+      disabled={disabled}
+    >
       <Text style={styles.buttonText}>{label}</Text>
     </TouchableOpacity>
   )
@@ -88,16 +96,18 @@ const formatError = (err: unknown) => {
 function App(): React.JSX.Element {
   const { open, openAuth, close, isLoading, error } = useInAppBrowser()
   const [isSupported, setIsSupported] = useState<boolean | null>(null)
-  const [log, setLog] = useState<string[]>([])
+  const [log, setLog] = useState<{ id: number; text: string }[]>([])
+  const logIdRef = useRef(0)
 
   useEffect(() => {
-    InAppBrowser.isAvailable()
+    isAvailable()
       .then(setIsSupported)
       .catch(() => setIsSupported(false))
   }, [])
 
   const pushLog = useCallback((message: string) => {
-    setLog(current => [message, ...current].slice(0, 6))
+    const id = ++logIdRef.current
+    setLog((current) => [{ id, text: message }, ...current].slice(0, 6))
   }, [])
 
   const handleOpenDocs = useCallback(async () => {
@@ -196,18 +206,30 @@ function App(): React.JSX.Element {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>react-native-inappbrowser-nitro</Text>
-        <Text style={styles.subtitle}>Nitro-powered in-app browser with iOS 26 & Android 16 features.</Text>
+        <Text style={styles.subtitle}>
+          Nitro-powered in-app browser with iOS 26 & Android 16 features.
+        </Text>
 
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Status</Text>
           <Text style={styles.paragraph}>{supportCopy}</Text>
-          <Text style={styles.paragraph}>Loading: {isLoading ? 'yes' : 'no'}</Text>
-          {error && <Text style={[styles.paragraph, styles.errorText]}>Last error: {error.message}</Text>}
+          <Text style={styles.paragraph}>
+            Loading: {isLoading ? 'yes' : 'no'}
+          </Text>
+          {error && (
+            <Text style={[styles.paragraph, styles.errorText]}>
+              Last error: {error.message}
+            </Text>
+          )}
         </View>
 
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Try the Features</Text>
-          <ExampleButton label="Open docs with dynamic palette" onPress={handleOpenDocs} disabled={isSupported === false} />
+          <ExampleButton
+            label="Open docs with dynamic palette"
+            onPress={handleOpenDocs}
+            disabled={isSupported === false}
+          />
           <ExampleButton
             label="Open repo in reader mode"
             onPress={handleOpenReader}
@@ -224,30 +246,41 @@ function App(): React.JSX.Element {
             onPress={handleAuth}
             disabled={isSupported === false}
           />
-          <ExampleButton label="Force close" onPress={handleClose} disabled={isSupported === false} tone="secondary" />
+          <ExampleButton
+            label="Force close"
+            onPress={handleClose}
+            disabled={isSupported === false}
+            tone="secondary"
+          />
         </View>
 
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Security Notes</Text>
           <Text style={styles.paragraph}>
-            iOS 26 allows blocking swipe-to-dismiss during sensitive auth flows via <Text style={styles.code}>enableEdgeDismiss</Text>. Android
-            16 adds dynamic contrast colors and partial custom tabs; emulators without gesture navigation may require the hardware back
-            button to exit.
+            iOS 26 allows blocking swipe-to-dismiss during sensitive auth flows
+            via <Text style={styles.code}>enableEdgeDismiss</Text>. Android 16
+            adds dynamic contrast colors and partial custom tabs; emulators
+            without gesture navigation may require the hardware back button to
+            exit.
           </Text>
           <Text style={styles.paragraph}>
-            The showcase button demonstrates the new iOS 26 palette controls, including high-contrast overrides, status bar tinting, and
-            form-sheet sizing. On older iOS versions the system gracefully ignores unsupported keys.
+            The showcase button demonstrates the new iOS 26 palette controls,
+            including high-contrast overrides, status bar tinting, and
+            form-sheet sizing. On older iOS versions the system gracefully
+            ignores unsupported keys.
           </Text>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Recent Results</Text>
           {log.length === 0 ? (
-            <Text style={styles.paragraph}>Interact with the buttons above to populate the log.</Text>
+            <Text style={styles.paragraph}>
+              Interact with the buttons above to populate the log.
+            </Text>
           ) : (
             log.map((entry, index) => (
-              <Text key={`${entry}-${index}`} style={styles.logLine}>
-                {index + 1}. {entry}
+              <Text key={entry.id} style={styles.logLine}>
+                {index + 1}. {entry.text}
               </Text>
             ))
           )}
@@ -255,8 +288,11 @@ function App(): React.JSX.Element {
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Update <Text style={styles.code}>AUTH_URL</Text> in <Text style={styles.code}>example/App.tsx</Text> with your provider&apos;s authorize endpoint and
-            register <Text style={styles.code}>{AUTH_REDIRECT_URL}</Text> in your native projects to test redirect-based flows.
+            Update <Text style={styles.code}>AUTH_URL</Text> in{' '}
+            <Text style={styles.code}>example/App.tsx</Text> with your
+            provider&apos;s authorize endpoint and register{' '}
+            <Text style={styles.code}>{AUTH_REDIRECT_URL}</Text> in your native
+            projects to test redirect-based flows.
           </Text>
         </View>
       </ScrollView>

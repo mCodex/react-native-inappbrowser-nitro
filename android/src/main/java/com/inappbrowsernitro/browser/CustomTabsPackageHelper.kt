@@ -18,11 +18,14 @@ internal object CustomTabsPackageHelper {
     return CustomTabsClient.getPackageName(context, null)
   }
 
+  @Suppress("DEPRECATION")
   private fun isPackageInstalled(context: Context, packageName: String): Boolean {
     return try {
       context.packageManager.getPackageInfo(packageName, 0)
       true
-    } catch (e: PackageManager.NameNotFoundException) {
+    } catch (_: PackageManager.NameNotFoundException) {
+      false
+    } catch (_: Exception) {
       false
     }
   }
