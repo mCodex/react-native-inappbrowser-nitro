@@ -17,7 +17,7 @@ on:
       - 'cpp/**'
       - 'ios/**'
       - '**/Podfile.lock'
-      - '**/bun.lock'
+      - '**/yarn.lock'
       - '**/*.podspec'
       - '**/react-native.config.js'
       - '**/nitro.json'
@@ -32,7 +32,7 @@ on:
       - 'cpp/**'
       - 'ios/**'
       - '**/Podfile.lock'
-      - '**/bun.lock'
+      - '**/yarn.lock'
       - '**/*.podspec'
       - '**/react-native.config.js'
       - '**/nitro.json'
@@ -48,16 +48,21 @@ concurrency:
 jobs:
   build:
     name: Build iOS Example App
-    runs-on: macOS-15
+    runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
+          cache: 'yarn'
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 16.4
+          xcode-version: '26.2'
 
       - name: Install dependencies (yarn)
         run: yarn install --immutable
@@ -68,7 +73,7 @@ jobs:
       - name: Setup Ruby (bundle)
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: '3.4'
           bundler-cache: true
           working-directory: example/ios
 
