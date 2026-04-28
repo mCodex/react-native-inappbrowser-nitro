@@ -280,8 +280,8 @@ export interface InAppBrowserResult {
 /**
  * Authentication result payload.
  *
- * Semantically identical to {@link InAppBrowserResult}; declared as a
- * `type` alias (rather than an empty extending interface) so the emitted
- * `.d.ts` is a few bytes smaller without changing IDE hover output.
+ * Semantically identical to {@link InAppBrowserResult}, but declared as a
+ * distinct interface so Nitrogen emits a dedicated Swift/Kotlin type and
+ * call sites read as `InAppBrowserAuthResult` in IDE tooltips.
  */
-export type InAppBrowserAuthResult = InAppBrowserResult
+export interface InAppBrowserAuthResult extends InAppBrowserResult {}
