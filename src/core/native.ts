@@ -9,10 +9,14 @@ import type {
 import { normalizeOptions } from '../utils/options'
 import { validateUrl } from '../utils/url'
 
-// Lazy-initialized JSI hybrid object. Keeping it behind a getter avoids any
-// native allocation at module import time, so consumers that only import
-// types (or tree-shake the runtime API) pay no startup cost.
+/** @internal Lazy-initialized JSI hybrid object cache. */
 let _native: InappbrowserNitro | null = null
+
+/**
+ * Lazily resolve the Nitro hybrid object. Keeping construction behind a
+ * getter avoids any native allocation at module import time, so consumers
+ * that only import types pay no startup cost.
+ */
 const getNative = (): InappbrowserNitro => {
   if (_native !== null) return _native
   const Ctor =
@@ -27,17 +31,34 @@ const getNative = (): InappbrowserNitro => {
  * - On iOS this is always `true`.
  * - On Android it depends on whether a Custom Tabs compatible browser is
  *   installed (Chrome, Samsung Internet, etc.).
+ *
+ * @example
+ * ```ts
+ * if (await isAvailable()) {
+ *   await open('https://example.com')
+ * }
+ * ```
+ * @see {@link InappbrowserNitro.isAvailable}
  */
 export const isAvailable = (): Promise<boolean> => getNative().isAvailable()
 
 /**
  * Present an in-app browser for `url` with optional platform configuration.
  *
- * Resolves with the final `InAppBrowserResult` once the user dismisses the
- * browser or the system closes it.
+ * Resolves with the final {@link InAppBrowserResult} once the user dismisses
+ * the browser or the system closes it.
  *
- * @throws if `url` is empty, missing a scheme, or uses a denied scheme
- * (`javascript:`, `data:`, `vbscript:`).
+ * @throws {Error} if `url` is empty, missing a scheme, or uses a denied
+ * scheme (`javascript:`, `data:`, `vbscript:`).
+ *
+ * @example
+ * ```ts
+ * const result = await open('https://example.com', {
+ *   preferredBarTintColor: { light: '#FFFFFF', dark: '#000000' },
+ * })
+ * if (result.type === 'success') { … }
+ * ```
+ * @see {@link InappbrowserNitro.open}
  */
 export const open = (
   url: string,
@@ -49,8 +70,17 @@ export const open = (
  * Launch an authentication session for `url` and resolve when the native
  * runtime intercepts a navigation matching `redirectUrl`.
  *
- * @throws if either `url` or `redirectUrl` is empty, missing a scheme,
- * or uses a denied scheme.
+ * @throws {Error} if either `url` or `redirectUrl` is empty, missing a
+ * scheme, or uses a denied scheme.
+ *
+ * @example
+ * ```ts
+ * const result = await openAuth(
+ *   'https://example.com/oauth/authorize?…',
+ *   'myapp://callback'
+ * )
+ * ```
+ * @see {@link InappbrowserNitro.openAuth}
  */
 export const openAuth = (
   url: string,
@@ -66,11 +96,15 @@ export const openAuth = (
 /**
  * Dismiss any currently visible in-app browser opened via {@link open}.
  * No-op when no browser is presented.
+ *
+ * @see {@link InappbrowserNitro.close}
  */
 export const close = (): Promise<void> => getNative().close()
 
 /**
  * Dismiss any currently running authentication session opened via
  * {@link openAuth}. No-op when no session is active.
+ *
+ * @see {@link InappbrowserNitro.closeAuth}
  */
 export const closeAuth = (): Promise<void> => getNative().closeAuth()

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   close as nativeClose,
@@ -13,17 +13,27 @@ import type {
   InAppBrowserResult,
 } from '../types'
 
+/**
+ * Stateful surface returned by {@link useInAppBrowser}.
+ *
+ * @example
+ * ```tsx
+ * const { open, isLoading, error } = useInAppBrowser()
+ *
+ * const onPress = () => {
+ *   open('https://example.com').catch(() => {
+ *     // `error` is also populated automatically.
+ *   })
+ * }
+ * ```
+ */
 export interface UseInAppBrowserReturn {
-  /**
-   * Present the in-app browser, tracking `isLoading` / `error` on this hook.
-   */
+  /** Present the in-app browser, tracking `isLoading` / `error` on this hook. */
   open: (
     url: string,
     options?: InAppBrowserOptions
   ) => Promise<InAppBrowserResult>
-  /**
-   * Launch an auth session, tracking `isLoading` / `error` on this hook.
-   */
+  /** Launch an auth session, tracking `isLoading` / `error` on this hook. */
   openAuth: (
     url: string,
     redirectUrl: string,
@@ -45,9 +55,13 @@ const toError = (err: unknown): Error =>
   err instanceof Error ? err : new Error(String(err))
 
 /**
- * React hook that wraps {@link nativeOpen} / {@link nativeOpenAuth} with
- * loading and error state tracking. `close`, `closeAuth`, and `isAvailable`
- * are direct delegates to the stateless module API.
+ * React hook that wraps the imperative {@link nativeOpen} / {@link nativeOpenAuth}
+ * APIs with loading and error state tracking. `close`, `closeAuth`, and
+ * `isAvailable` are direct delegates to the stateless module API.
+ *
+ * Memoization is handled by the React Compiler at build time, so the returned
+ * object identity is stable across re-renders without manual `useCallback` /
+ * `useMemo` wrappers.
  */
 export const useInAppBrowser = (): UseInAppBrowserReturn => {
   const [isLoading, setIsLoading] = useState(false)
@@ -63,54 +77,38 @@ export const useInAppBrowser = (): UseInAppBrowserReturn => {
     }
   }, [])
 
-  const open = useCallback(
-    async (url: string, options?: InAppBrowserOptions) => {
-      if (isMountedRef.current) {
-        setIsLoading(true)
-        setError(null)
-      }
-      try {
-        return await nativeOpen(url, options)
-      } catch (err) {
-        const next = toError(err)
-        if (isMountedRef.current) setError(next)
-        throw next
-      } finally {
-        if (isMountedRef.current) setIsLoading(false)
-      }
-    },
-    []
-  )
+  const runTracked = async <T>(fn: () => Promise<T>): Promise<T> => {
+    if (isMountedRef.current) {
+      setIsLoading(true)
+      setError(null)
+    }
+    try {
+      return await fn()
+    } catch (err) {
+      const next = toError(err)
+      if (isMountedRef.current) setError(next)
+      throw next
+    } finally {
+      if (isMountedRef.current) setIsLoading(false)
+    }
+  }
 
-  const openAuth = useCallback(
-    async (url: string, redirectUrl: string, options?: InAppBrowserOptions) => {
-      if (isMountedRef.current) {
-        setIsLoading(true)
-        setError(null)
-      }
-      try {
-        return await nativeOpenAuth(url, redirectUrl, options)
-      } catch (err) {
-        const next = toError(err)
-        if (isMountedRef.current) setError(next)
-        throw next
-      } finally {
-        if (isMountedRef.current) setIsLoading(false)
-      }
-    },
-    []
-  )
+  const open = (url: string, options?: InAppBrowserOptions) =>
+    runTracked(() => nativeOpen(url, options))
 
-  return useMemo<UseInAppBrowserReturn>(
-    () => ({
-      open,
-      openAuth,
-      close: nativeClose,
-      closeAuth: nativeCloseAuth,
-      isAvailable: nativeIsAvailable,
-      isLoading,
-      error,
-    }),
-    [open, openAuth, isLoading, error]
-  )
+  const openAuth = (
+    url: string,
+    redirectUrl: string,
+    options?: InAppBrowserOptions
+  ) => runTracked(() => nativeOpenAuth(url, redirectUrl, options))
+
+  return {
+    open,
+    openAuth,
+    close: nativeClose,
+    closeAuth: nativeCloseAuth,
+    isAvailable: nativeIsAvailable,
+    isLoading,
+    error,
+  }
 }
