@@ -26,28 +26,29 @@ const ANIMATION_KEYS = [
 ] as const satisfies readonly (keyof BrowserAnimations)[]
 
 /**
- * Whitelist-trim string fields. Returns `null` when no mutation was required
- * (caller can keep its original reference); otherwise returns the new payload
- * (or `undefined` when every entry was dropped).
+ * Whitelist-trim string fields. Returns `null` when the input was already
+ * bridge-safe (caller can keep its original reference); otherwise returns the
+ * new payload (or `undefined` when every entry was dropped).
+ *
+ * "Bridge-safe" means: every own property is a non-empty trimmed string AND
+ * is in the whitelist. Any explicit `undefined`, non-string value, or extra
+ * enumerable key forces a fresh object so the value crossing JSI is clean.
  */
 const trimStringFields = <T extends object>(
   source: T,
   keys: readonly (keyof T)[]
 ): T | undefined | null => {
+  const ownKeyCount = Object.keys(source).length
   let out: Partial<T> | null = null
   let mutated = false
   let kept = 0
-  let originalKeyCount = 0
-
-  for (const key of Object.keys(source) as (keyof T)[]) {
-    const v = source[key]
-    if (v !== undefined) originalKeyCount++
-  }
 
   for (const key of keys) {
     const value = source[key]
     if (typeof value !== 'string') {
-      if (value !== undefined) mutated = true
+      // Any own non-string property (including explicit `undefined`) needs
+      // to be stripped before bridging.
+      if (key in source) mutated = true
       continue
     }
     const trimmed = value.trim()
@@ -61,7 +62,8 @@ const trimStringFields = <T extends object>(
     kept++
   }
 
-  if (!mutated && kept === originalKeyCount) return null
+  // Extra (non-whitelisted) own keys also require sanitization.
+  if (!mutated && kept === ownKeyCount) return null
   return out ? (compact(out) as T | undefined) : undefined
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   close as nativeClose,
@@ -59,9 +59,10 @@ const toError = (err: unknown): Error =>
  * APIs with loading and error state tracking. `close`, `closeAuth`, and
  * `isAvailable` are direct delegates to the stateless module API.
  *
- * Memoization is handled by the React Compiler at build time, so the returned
- * object identity is stable across re-renders without manual `useCallback` /
- * `useMemo` wrappers.
+ * `open`/`openAuth` and the returned object are memoized with `useCallback` /
+ * `useMemo` so consumers passing them to `useEffect` deps or `React.memo`
+ * children get stable identities — independent of whether the host app has
+ * `babel-plugin-react-compiler` enabled.
  */
 export const useInAppBrowser = (): UseInAppBrowserReturn => {
   const [isLoading, setIsLoading] = useState(false)
@@ -77,38 +78,47 @@ export const useInAppBrowser = (): UseInAppBrowserReturn => {
     }
   }, [])
 
-  const runTracked = async <T>(fn: () => Promise<T>): Promise<T> => {
-    if (isMountedRef.current) {
-      setIsLoading(true)
-      setError(null)
-    }
-    try {
-      return await fn()
-    } catch (err) {
-      const next = toError(err)
-      if (isMountedRef.current) setError(next)
-      throw next
-    } finally {
-      if (isMountedRef.current) setIsLoading(false)
-    }
-  }
+  const runTracked = useCallback(
+    async <T>(fn: () => Promise<T>): Promise<T> => {
+      if (isMountedRef.current) {
+        setIsLoading(true)
+        setError(null)
+      }
+      try {
+        return await fn()
+      } catch (err) {
+        const next = toError(err)
+        if (isMountedRef.current) setError(next)
+        throw next
+      } finally {
+        if (isMountedRef.current) setIsLoading(false)
+      }
+    },
+    []
+  )
 
-  const open = (url: string, options?: InAppBrowserOptions) =>
-    runTracked(() => nativeOpen(url, options))
+  const open = useCallback(
+    (url: string, options?: InAppBrowserOptions) =>
+      runTracked(() => nativeOpen(url, options)),
+    [runTracked]
+  )
 
-  const openAuth = (
-    url: string,
-    redirectUrl: string,
-    options?: InAppBrowserOptions
-  ) => runTracked(() => nativeOpenAuth(url, redirectUrl, options))
+  const openAuth = useCallback(
+    (url: string, redirectUrl: string, options?: InAppBrowserOptions) =>
+      runTracked(() => nativeOpenAuth(url, redirectUrl, options)),
+    [runTracked]
+  )
 
-  return {
-    open,
-    openAuth,
-    close: nativeClose,
-    closeAuth: nativeCloseAuth,
-    isAvailable: nativeIsAvailable,
-    isLoading,
-    error,
-  }
+  return useMemo<UseInAppBrowserReturn>(
+    () => ({
+      open,
+      openAuth,
+      close: nativeClose,
+      closeAuth: nativeCloseAuth,
+      isAvailable: nativeIsAvailable,
+      isLoading,
+      error,
+    }),
+    [open, openAuth, isLoading, error]
+  )
 }
