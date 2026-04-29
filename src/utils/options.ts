@@ -11,27 +11,6 @@ import type {
 const compact = <T extends object>(obj: T): T | undefined =>
   Object.keys(obj).length > 0 ? obj : undefined
 
-/**
- * Copy whitelisted string fields from `source` into a new object, trimming
- * each value and dropping empty or non-string entries.
- */
-const trimStringFields = <T extends object>(
-  source: T,
-  keys: readonly (keyof T)[]
-): Partial<T> => {
-  const out: Partial<T> = {}
-  for (const key of keys) {
-    const value = source[key]
-    if (typeof value === 'string') {
-      const trimmed = value.trim()
-      if (trimmed) {
-        out[key] = trimmed as T[keyof T]
-      }
-    }
-  }
-  return out
-}
-
 const DYNAMIC_COLOR_KEYS = [
   'base',
   'light',
@@ -46,41 +25,89 @@ const ANIMATION_KEYS = [
   'endExit',
 ] as const satisfies readonly (keyof BrowserAnimations)[]
 
-const sanitizeColor = (value: DynamicColor): DynamicColor | undefined =>
-  compact(trimStringFields(value, DYNAMIC_COLOR_KEYS))
+/**
+ * Whitelist-trim string fields. Returns `null` when the input was already
+ * bridge-safe (caller can keep its original reference); otherwise returns the
+ * new payload (or `undefined` when every entry was dropped).
+ *
+ * "Bridge-safe" means: every own property is a non-empty trimmed string AND
+ * is in the whitelist. Any explicit `undefined`, non-string value, or extra
+ * enumerable key forces a fresh object so the value crossing JSI is clean.
+ */
+const trimStringFields = <T extends object>(
+  source: T,
+  keys: readonly (keyof T)[]
+): T | undefined | null => {
+  const ownKeyCount = Object.keys(source).length
+  let out: Partial<T> | null = null
+  let mutated = false
+  let kept = 0
 
-const sanitizeAnimations = (
-  value: BrowserAnimations
-): BrowserAnimations | undefined =>
-  compact(trimStringFields(value, ANIMATION_KEYS))
+  for (const key of keys) {
+    const value = source[key]
+    if (typeof value !== 'string') {
+      // Any own non-string property (including explicit `undefined`) needs
+      // to be stripped before bridging.
+      if (key in source) mutated = true
+      continue
+    }
+    const trimmed = value.trim()
+    if (!trimmed) {
+      mutated = true
+      continue
+    }
+    if (trimmed !== value) mutated = true
+    if (out === null) out = {}
+    out[key] = trimmed as T[keyof T]
+    kept++
+  }
+
+  // Extra (non-whitelisted) own keys also require sanitization.
+  if (!mutated && kept === ownKeyCount) return null
+  return out ? (compact(out) as T | undefined) : undefined
+}
+
+const sanitizeColor = (value: DynamicColor) =>
+  trimStringFields(value, DYNAMIC_COLOR_KEYS)
+
+const sanitizeAnimations = (value: BrowserAnimations) =>
+  trimStringFields(value, ANIMATION_KEYS)
 
 const sanitizeHeaders = (
   headers: Record<string, string>
-): Record<string, string> | undefined => {
-  const out: Record<string, string> = {}
+): Record<string, string> | undefined | null => {
+  let out: Record<string, string> | null = null
+  let mutated = false
+
   for (const key of Object.keys(headers)) {
     const value = headers[key]
-    if (typeof value !== 'string') continue
+    if (typeof value !== 'string') {
+      mutated = true
+      continue
+    }
     const normalizedKey = key.trim()
-    if (!normalizedKey) continue
+    if (!normalizedKey) {
+      mutated = true
+      continue
+    }
+    if (normalizedKey !== key) mutated = true
+    if (out === null) out = {}
     out[normalizedKey] = value
   }
-  return compact(out)
+
+  if (!mutated) return null
+  return out ? compact(out) : undefined
 }
 
-/**
- * Per-key normalizers. Each handler receives the raw value and returns the
- * sanitized value, or `undefined` to omit the field entirely.
- */
-type Normalizer<K extends keyof InAppBrowserOptions> = (
-  value: NonNullable<InAppBrowserOptions[K]>
-) => InAppBrowserOptions[K]
+type Sanitizer<V> = (value: V) => V | undefined | null
 
-type NormalizerMap = {
-  [K in keyof InAppBrowserOptions]?: Normalizer<K>
+type SanitizerMap = {
+  [K in keyof InAppBrowserOptions]?: Sanitizer<
+    NonNullable<InAppBrowserOptions[K]>
+  >
 }
 
-const NORMALIZERS: NormalizerMap = {
+const SANITIZERS: SanitizerMap = {
   preferredBarTintColor: sanitizeColor,
   preferredControlTintColor: sanitizeColor,
   toolbarColor: sanitizeColor,
@@ -95,27 +122,55 @@ const NORMALIZERS: NormalizerMap = {
  * Remove `undefined`/`null` entries and sanitize nested values before the
  * options object is bridged to the native hybrid module.
  *
- * Fast path: when no options are supplied, returns `undefined` without any
- * allocations.
+ * Fast paths (zero allocations):
+ * - When no options are supplied, returns `undefined`.
+ * - When every field is already clean, returns the original `options` reference
+ *   so consumers passing a stable object incur no GC churn per call.
  */
 export const normalizeOptions = (
   options?: InAppBrowserOptions
 ): InAppBrowserOptions | undefined => {
   if (!options) return undefined
 
+  // Fast first pass: detect whether anything needs to change.
+  // Sanitizers return `null` only when the input is already bridge-safe
+  // (see `trimStringFields`), so `sanitizer(value) !== null` is a sound
+  // dirty-check predicate without needing a separate traversal.
+  let dirty = false
+  const keys = Object.keys(options)
+
+  for (const key of keys) {
+    const typedKey = key as keyof InAppBrowserOptions & string
+    const value = options[typedKey]
+    if (value === undefined || value === null) {
+      dirty = true
+      break
+    }
+    const sanitizer = SANITIZERS[typedKey] as Sanitizer<unknown> | undefined
+    if (sanitizer && sanitizer(value) !== null) {
+      dirty = true
+      break
+    }
+  }
+
+  if (!dirty) return options
+
+  // Slow path: build a new object with sanitized values.
   const out: InAppBrowserOptions = {}
-  for (const key of Object.keys(options)) {
-    const typedKey = key as keyof InAppBrowserOptions
+  for (const key of keys) {
+    const typedKey = key as keyof InAppBrowserOptions & string
     const value = options[typedKey]
     if (value === undefined || value === null) continue
 
-    const normalizer = NORMALIZERS[typedKey] as
-      | ((v: unknown) => unknown)
-      | undefined
-    const next = normalizer ? normalizer(value) : value
-    if (next === undefined) continue
+    const sanitizer = SANITIZERS[typedKey] as Sanitizer<unknown> | undefined
+    if (!sanitizer) {
+      ;(out as Record<string, unknown>)[typedKey] = value
+      continue
+    }
 
-    // Per-key correctness is guaranteed by the typed `NORMALIZERS` map above.
+    const sanitized = sanitizer(value)
+    const next = sanitized === null ? value : sanitized
+    if (next === undefined) continue
     ;(out as Record<string, unknown>)[typedKey] = next
   }
 
