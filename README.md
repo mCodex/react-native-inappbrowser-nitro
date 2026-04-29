@@ -355,8 +355,6 @@ yarn ios       # or: yarn android
 
 A `pre-commit` hook (Husky + lint-staged + Biome) auto-formats staged files. CI runs on iOS (`macos-26`, Xcode 26.2) and Android (`ubuntu-latest`, JDK 21).
 
-We follow [Conventional Commits](https://www.conventionalcommits.org/). Releases are automated via [semantic-release](https://github.com/semantic-release/semantic-release).
-
 ---
 
 ## Acknowledgements

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+  "git": {
+    "commitMessage": "chore: release v${version}",
+    "tagName": "v${version}",
+    "requireCleanWorkingDir": true,
+    "requireUpstream": true,
+    "push": true
+  },
+  "github": {
+    "release": true,
+    "releaseName": "v${version}"
+  },
+  "npm": {
+    "publish": true,
+    "publishArgs": ["--access", "public", "--provenance"]
+  },
+  "hooks": {
+    "before:init": ["yarn lint", "yarn typecheck"],
+    "before:release": "yarn codegen"
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": {
+        "name": "conventionalcommits",
+        "types": [
+          { "type": "feat", "section": "✨ Features" },
+          { "type": "fix", "section": "🐛 Bug Fixes" },
+          { "type": "perf", "section": "💨 Performance Improvements" },
+          { "type": "refactor", "section": "🔄 Code Refactors" },
+          { "type": "docs", "section": "📚 Documentation" },
+          { "type": "chore", "section": "🛠️ Other changes" }
+        ]
+      },
+      "infile": "CHANGELOG.md",
+      "header": "# Changelog\n\nAll notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines."
+    }
+  }
+}
