@@ -133,6 +133,9 @@ export const normalizeOptions = (
   if (!options) return undefined
 
   // Fast first pass: detect whether anything needs to change.
+  // Sanitizers return `null` only when the input is already bridge-safe
+  // (see `trimStringFields`), so `sanitizer(value) !== null` is a sound
+  // dirty-check predicate without needing a separate traversal.
   let dirty = false
   const keys = Object.keys(options)
 
