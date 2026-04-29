@@ -7741,18 +7741,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nitrogen@npm:0.35.4":
-  version: 0.35.4
-  resolution: "nitrogen@npm:0.35.4"
+"nitrogen@npm:0.35.6":
+  version: 0.35.6
+  resolution: "nitrogen@npm:0.35.6"
   dependencies:
     chalk: "npm:^5.3.0"
-    react-native-nitro-modules: "npm:^0.35.4"
+    react-native-nitro-modules: "npm:^0.35.6"
     ts-morph: "npm:^27.0.0"
     yargs: "npm:^18.0.0"
     zod: "npm:^4.0.5"
   bin:
     nitrogen: lib/index.js
-  checksum: 10c0/d8c7eed4e08c107475e8a3154f7d5ddf9876448032f0986b0e8d9e58abeb3dbc8ecd7cdb45190f12ab0fbafc815bb1b31209e93910e7f5d671e892d794449631
+  checksum: 10c0/3126cee262dc908717cfba21b38250bcf658afa6586ec2b66f3f9276050bf433af66cf072b70a4fc6814b812271f32566ac639f1c3147d26c20ba71c74a9a40a
   languageName: node
   linkType: hard
 
@@ -8929,7 +8929,7 @@ __metadata:
     babel-plugin-module-resolver: "npm:^5.0.3"
     react: "npm:19.2.3"
     react-native: "npm:0.85.2"
-    react-native-nitro-modules: "npm:0.35.4"
+    react-native-nitro-modules: "npm:0.35.6"
     react-native-safe-area-context: "npm:^5.7.0"
   languageName: unknown
   linkType: soft
@@ -8945,11 +8945,11 @@ __metadata:
     "@types/jest": "npm:^30.0.0"
     "@types/react": "npm:19.2.14"
     conventional-changelog-conventionalcommits: "npm:^9.3.1"
-    nitrogen: "npm:0.35.4"
+    nitrogen: "npm:0.35.6"
     react: "npm:19.2.3"
     react-native: "npm:0.85"
     react-native-builder-bob: "npm:^0.41.0"
-    react-native-nitro-modules: "npm:0.35.4"
+    react-native-nitro-modules: "npm:0.35.6"
     semantic-release: "npm:^25.0.3"
     typescript: "npm:^6.0.3"
   peerDependencies:
@@ -8969,13 +8969,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:0.35.4, react-native-nitro-modules@npm:^0.35.4":
-  version: 0.35.4
-  resolution: "react-native-nitro-modules@npm:0.35.4"
+"react-native-nitro-modules@npm:0.35.6, react-native-nitro-modules@npm:^0.35.6":
+  version: 0.35.6
+  resolution: "react-native-nitro-modules@npm:0.35.6"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/dffb64c1b349d21feb8a33546cde48e3c5d92e04e120f733c178d4afa26ef6de652c6236a4eed0da7ca842ac9815afaa0708f57ae1454d881397e5d0575031c2
+  checksum: 10c0/57ec2a2d2e57da923c5c8c81d28f323691be0373d528b81a1a6e1da0e6675f29faa443cc16babd0abd4cd5e08e51ff273ed04a139f368236662212f15cc3a678
   languageName: node
   linkType: hard
 
