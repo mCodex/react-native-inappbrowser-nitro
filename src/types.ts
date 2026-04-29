@@ -160,9 +160,26 @@ export interface FormSheetContentSize {
 export interface InAppBrowserIOSOptions {
   /** Style used for the dismiss button in the Safari toolbar. */
   dismissButtonStyle?: DismissButtonStyle
-  /** Tint color of the navigation/toolbar background. */
+  /**
+   * Tint color of the navigation/toolbar background.
+   *
+   * @remarks
+   * **iOS 26+:** Safari View Controller adopts the system Liquid Glass
+   * material for its toolbar, which samples the underlying content rather
+   * than rendering a flat fill. As a result this property has reduced or no
+   * visible effect on iOS 26 and later. Apple does not currently expose a
+   * public API to opt out of the glass material; the value is still
+   * forwarded to UIKit for backward compatibility.
+   */
   preferredBarTintColor?: DynamicColor
-  /** Tint color of the toolbar buttons (e.g. Done, Share). */
+  /**
+   * Tint color of the toolbar buttons (e.g. Done, Share).
+   *
+   * @remarks
+   * **iOS 26+:** Control tinting is partially overridden by the Liquid Glass
+   * material's adaptive monochrome treatment. Custom tints may render with
+   * lower contrast than on iOS 18 and earlier.
+   */
   preferredControlTintColor?: DynamicColor
   /** Status bar style while the browser is presented. */
   preferredStatusBarStyle?: StatusBarStyle
