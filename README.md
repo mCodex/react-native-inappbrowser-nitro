@@ -16,7 +16,8 @@
 [**API**](#api) ·
 [**Options**](#options) ·
 [**Migration**](#migrating-from-react-native-inappbrowser-reborn) ·
-[**FAQ**](#faq)
+[**FAQ**](#faq) ·
+[**Changelog**](./CHANGELOG.md)
 
 <img src="./app.gif" alt="Demo" width="280" />
 
@@ -24,7 +25,7 @@
 
 ---
 
-## Why this library?
+## ✨ Why this library?
 
 | | |
 |---|---|
@@ -37,7 +38,7 @@
 
 ---
 
-## Requirements
+## 📋 Requirements
 
 | | Minimum | Tested up to |
 |---|---|---|
@@ -51,7 +52,7 @@
 
 ---
 
-## Installation
+## 📦 Installation
 
 ```sh
 yarn add react-native-inappbrowser-nitro react-native-nitro-modules
@@ -80,25 +81,7 @@ Autolinking handles everything. No manual `MainApplication` edits required.
 
 ---
 
-## Quick start
-
-### Imperative API
-
-```tsx
-import { isAvailable, open } from 'react-native-inappbrowser-nitro'
-
-if (await isAvailable()) {
-  const result = await open('https://github.com', {
-    preferredBarTintColor:     { light: '#FFFFFF', dark: '#000000' }, // iOS
-    toolbarColor:              { light: '#FFFFFF', dark: '#000000' }, // Android
-    readerMode: true,
-  })
-
-  if (result.type === 'success') {
-    console.log('Opened', result.url)
-  }
-}
-```
+## 🚀 Quick start
 
 ### React hook
 
@@ -121,6 +104,24 @@ function DocsButton() {
 ```
 
 The hook handles `isLoading` / `error` state, is **safe to call after unmount** (state updates are guarded), and returns stable `open`/`openAuth` references via `useCallback` so it's safe to put them in effect dependency arrays.
+
+### Imperative API
+
+```tsx
+import { isAvailable, open } from 'react-native-inappbrowser-nitro'
+
+if (await isAvailable()) {
+  const result = await open('https://github.com', {
+    preferredBarTintColor:     { light: '#FFFFFF', dark: '#000000' }, // iOS
+    toolbarColor:              { light: '#FFFFFF', dark: '#000000' }, // Android
+    readerMode: true,
+  })
+
+  if (result.type === 'success') {
+    console.log('Opened', result.url)
+  }
+}
+```
 
 ### OAuth / SSO with `openAuth`
 
@@ -145,7 +146,7 @@ if (result.type === 'success' && result.url) {
 
 ---
 
-## API
+## 📖 API
 
 All exports come from the package root unless noted. Every function returns a `Promise`.
 
@@ -181,7 +182,7 @@ These are sanity checks performed in JS before the call ever crosses JSI.
 
 ---
 
-## Options
+## ⚙️ Options
 
 `open` and `openAuth` accept a single options object that aggregates every iOS and Android knob. **Cross-platform fields** apply everywhere; **`@platform` fields** are silently ignored on the other platform.
 
@@ -245,7 +246,7 @@ Each value is a `#RRGGBB` or `#AARRGGBB` hex string. If a mode-specific value is
 
 ---
 
-## Platform notes
+## 🔧 Platform notes
 
 ### iOS 26 Liquid Glass
 
@@ -264,30 +265,7 @@ Android prefers Chrome Custom Tabs when available. On devices without a Custom T
 
 ---
 
-## Migrating from `react-native-inappbrowser-reborn`
-
-```diff
-- import InAppBrowser from 'react-native-inappbrowser-reborn'
-+ import { open, openAuth, close, isAvailable } from 'react-native-inappbrowser-nitro'
-
-- await InAppBrowser.open(url, { toolbarColor: '#6200EE' })
-+ await open(url, { toolbarColor: { base: '#6200EE', dark: '#3700B3' } })
-
-- await InAppBrowser.openAuth(url, redirectUrl, { ephemeralWebSession: true })
-+ await openAuth(url, redirectUrl, { ephemeralWebSession: true })
-```
-
-Key differences:
-
-- **Named exports** instead of a default class — better tree-shaking.
-- **`DynamicColor` objects** instead of single hex strings, so the same call adapts to light/dark/high-contrast.
-- **String-literal enums** (`'success'`, `'cancel'`, `'dismiss'`) for `result.type` — fully type-narrowable.
-- **Hook-based state**: `useInAppBrowser()` exposes `isLoading` and `error` without manual wrappers.
-- **No bridge**: every call goes through Nitro's JSI hybrid object.
-
----
-
-## FAQ
+## ❓ FAQ
 
 <details>
 <summary><strong>Why not just use <code>WKWebView</code> / <code>react-native-webview</code>?</strong></summary>
@@ -333,9 +311,11 @@ Most often this means the URL was rejected by the JS-side validator (empty / mis
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are very welcome. The library is small and well-tested — a great place to land your first React Native PR.
+
+Found a bug or have a feature request? [Open an issue](https://github.com/mCodex/react-native-inappbrowser-nitro/issues/new/choose).
 
 ```sh
 git clone https://github.com/mCodex/react-native-inappbrowser-nitro
@@ -357,13 +337,6 @@ A `pre-commit` hook (Husky + lint-staged + Biome) auto-formats staged files. CI 
 
 ---
 
-## Acknowledgements
-
-- [Marc Rousavy](https://github.com/mrousavy) and the Margelo team for [Nitro Modules](https://nitro.margelo.com/).
-- [`react-native-inappbrowser-reborn`](https://github.com/proyecto26/react-native-inappbrowser) — the original API inspiration.
-
----
-
-## License
+## 📄 License
 
 [MIT](./LICENSE) © [Mateus Andrade](https://github.com/mCodex)
