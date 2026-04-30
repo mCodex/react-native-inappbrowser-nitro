@@ -79,6 +79,14 @@ cd ios && pod install
 
 Autolinking handles everything. No manual `MainApplication` edits required.
 
+> [!NOTE]
+> If you have ProGuard/R8 enabled (release builds), add the following rule to `android/app/proguard-rules.pro` to prevent the native Nitro class from being stripped:
+> ```pro
+> # react-native-inappbrowser-nitro
+> -keep class com.inappbrowsernitro.** { *; }
+> ```
+> Without this, release builds may crash with `Couldn't find class 'com/inappbrowsernitro/HybridInappbrowserNitro'`.
+
 ---
 
 ## 🚀 Quick start
