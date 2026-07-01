@@ -11,6 +11,10 @@ final class SafariPresenter: NSObject {
       return InAppBrowserResult(type: .dismiss, url: nil, message: "invalid url")
     }
 
+    guard controller == nil else {
+      return InAppBrowserResult(type: .dismiss, url: nil, message: "browser already open")
+    }
+
     let configuration = SFSafariViewController.Configuration()
     configuration.entersReaderIfAvailable = options?.readerMode ?? false
     configuration.barCollapsingEnabled = options?.enableBarCollapsing ?? false
@@ -18,8 +22,8 @@ final class SafariPresenter: NSObject {
     let controller = NitroSafariViewController(
       url: url,
       configuration: configuration,
-      statusBarStyle: SafariStyleMapper.statusBarStyle(from: options?.preferredStatusBarStyle),
-      userInterfaceStyle: SafariStyleMapper.interfaceStyle(from: options?.overrideUserInterfaceStyle)
+      statusBarStyle: options?.preferredStatusBarStyle?.toUI,
+      userInterfaceStyle: options?.overrideUserInterfaceStyle?.toUI
     )
 
     apply(options: options, to: controller)
@@ -84,7 +88,7 @@ final class SafariPresenter: NSObject {
     }
 
     if let dismissStyle = options?.dismissButtonStyle {
-      controller.dismissButtonStyle = SafariStyleMapper.dismissButtonStyle(from: dismissStyle)
+      controller.dismissButtonStyle = dismissStyle.toSFSafari
     }
 
     if let formSize = options?.formSheetPreferredContentSize {
@@ -95,17 +99,84 @@ final class SafariPresenter: NSObject {
     }
 
     if let presentation = options?.modalPresentationStyle {
-      controller.modalPresentationStyle = SafariStyleMapper.presentationStyle(from: presentation)
+      controller.modalPresentationStyle = presentation.toUIKit
     }
 
     if let transition = options?.modalTransitionStyle {
-      controller.modalTransitionStyle = SafariStyleMapper.transitionStyle(from: transition)
+      controller.modalTransitionStyle = transition.toUIKit
       if transition == .partialcurl {
         controller.modalPresentationStyle = .fullScreen
       }
     }
   }
 }
+
+// MARK: - Style conversions (kept next to their only consumer)
+
+private extension DismissButtonStyle {
+  var toSFSafari: SFSafariViewController.DismissButtonStyle {
+    switch self {
+    case .cancel: return .cancel
+    case .done: return .done
+    case .close: return .close
+    @unknown default: return .done
+    }
+  }
+}
+
+private extension ModalPresentationStyle {
+  var toUIKit: UIModalPresentationStyle {
+    switch self {
+    case .automatic: return .automatic
+    case .none: return .none
+    case .fullscreen: return .fullScreen
+    case .pagesheet: return .pageSheet
+    case .formsheet: return .formSheet
+    case .currentcontext: return .currentContext
+    case .custom: return .custom
+    case .overfullscreen: return .overFullScreen
+    case .overcurrentcontext: return .overCurrentContext
+    case .popover: return .popover
+    @unknown default: return .automatic
+    }
+  }
+}
+
+private extension ModalTransitionStyle {
+  var toUIKit: UIModalTransitionStyle {
+    switch self {
+    case .coververtical: return .coverVertical
+    case .fliphorizontal: return .flipHorizontal
+    case .crossdissolve: return .crossDissolve
+    case .partialcurl: return .partialCurl
+    @unknown default: return .coverVertical
+    }
+  }
+}
+
+private extension StatusBarStyle {
+  var toUI: UIStatusBarStyle? {
+    switch self {
+    case .default: return .default
+    case .lightcontent: return .lightContent
+    case .darkcontent: return .darkContent
+    @unknown default: return nil
+    }
+  }
+}
+
+private extension UserInterfaceStyle {
+  var toUI: UIUserInterfaceStyle? {
+    switch self {
+    case .unspecified: return .unspecified
+    case .light: return .light
+    case .dark: return .dark
+    @unknown default: return nil
+    }
+  }
+}
+
+// MARK: - Private helpers
 
 private final class NitroSafariViewController: SFSafariViewController {
   private let resolvedStatusBarStyle: UIStatusBarStyle?
@@ -137,64 +208,6 @@ private final class SafariDismissDelegate: NSObject, SFSafariViewControllerDeleg
   }
 
   func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-    // iOS Simulator (and hardware without biometric setup) dismisses immediately for some auth flows.
     onDismiss()
-  }
-}
-
-private enum SafariStyleMapper {
-  static func dismissButtonStyle(from style: DismissButtonStyle) -> SFSafariViewController.DismissButtonStyle {
-    switch style {
-    case .cancel: return .cancel
-    case .done: return .done
-    case .close: return .close
-    @unknown default: return .done
-    }
-  }
-
-  static func presentationStyle(from style: ModalPresentationStyle) -> UIModalPresentationStyle {
-    switch style {
-    case .automatic: return .automatic
-    case .none: return .none
-    case .fullscreen: return .fullScreen
-    case .pagesheet: return .pageSheet
-    case .formsheet: return .formSheet
-    case .currentcontext: return .currentContext
-    case .custom: return .custom
-    case .overfullscreen: return .overFullScreen
-    case .overcurrentcontext: return .overCurrentContext
-    case .popover: return .popover
-    @unknown default: return .automatic
-    }
-  }
-
-  static func transitionStyle(from style: ModalTransitionStyle) -> UIModalTransitionStyle {
-    switch style {
-    case .coververtical: return .coverVertical
-    case .fliphorizontal: return .flipHorizontal
-    case .crossdissolve: return .crossDissolve
-    case .partialcurl: return .partialCurl
-    @unknown default: return .coverVertical
-    }
-  }
-
-  static func statusBarStyle(from style: StatusBarStyle?) -> UIStatusBarStyle? {
-    guard let style else { return nil }
-    switch style {
-    case .default: return .default
-    case .lightcontent: return .lightContent
-    case .darkcontent: return .darkContent
-    @unknown default: return nil
-    }
-  }
-
-  static func interfaceStyle(from style: UserInterfaceStyle?) -> UIUserInterfaceStyle? {
-    guard let style else { return nil }
-    switch style {
-    case .unspecified: return .unspecified
-    case .light: return .light
-    case .dark: return .dark
-    @unknown default: return nil
-    }
   }
 }
