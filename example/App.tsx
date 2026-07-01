@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -199,12 +200,14 @@ function App(): React.JSX.Element {
             onPress={handleOpenDocs}
             disabled={isSupported === false}
           />
-          <ExampleButton
-            label="Open article in reader mode"
-            onPress={handleOpenReader}
-            disabled={isSupported === false}
-            tone="secondary"
-          />
+          {Platform.OS === 'ios' && (
+            <ExampleButton
+              label="Open article in Reader Mode"
+              onPress={handleOpenReader}
+              disabled={isSupported === false}
+              tone="secondary"
+            />
+          )}
           <ExampleButton
             label="Launch auth session (demo)"
             onPress={handleAuth}

@@ -186,32 +186,32 @@ interface InAppBrowserResult {
 
 ## ⚙️ Options
 
-`open` and `openAuth` accept a single options object. Cross-platform fields apply everywhere; `@platform` fields are silently ignored on the other platform.
+`open` and `openAuth` accept one options object. Platform-only fields are ignored on the other platform.
 
 ### iOS
 
 | Option | Type | Default | Notes |
 |---|---|---|---|
 | `dismissButtonStyle` | `'done' \| 'close' \| 'cancel'` | `'done'` | Toolbar dismiss button label. |
-| `preferredBarTintColor` | `DynamicColor` | system | Toolbar background. **iOS 26:** see [Liquid Glass](#ios-26-liquid-glass). |
-| `preferredControlTintColor` | `DynamicColor` | system | Toolbar button tint. **iOS 26:** see below. |
+| `preferredBarTintColor` | `DynamicColor` | system | Safari toolbar background hint. iOS 26 Liquid Glass may ignore it. |
+| `preferredControlTintColor` | `DynamicColor` | system | Safari control tint hint. iOS 26 may adapt it for contrast. |
 | `preferredStatusBarStyle` | `'default' \| 'lightContent' \| 'darkContent'` | system | Status bar appearance while presented. |
-| `readerMode` | `boolean` | `false` | Open in Safari Reader Mode if the page supports it. |
+| `readerMode` | `boolean` | `false` | iOS only. Ask Safari to enter Reader Mode if the page supports it; Android Custom Tabs ignore this option. |
 | `animated` | `boolean` | `true` | Animate present/dismiss. |
 | `modalPresentationStyle` | `ModalPresentationStyle` | `'automatic'` | UIKit modal style. |
 | `modalTransitionStyle` | `ModalTransitionStyle` | `'coverVertical'` | UIKit transition. Use `'partialCurl'` only with `'fullScreen'`. |
-| `modalEnabled` | `boolean` | `true` | Present modally vs. push onto navigation stack. |
+| `modalEnabled` | `boolean` | `true` | Present modally instead of pushing onto a navigation stack. |
 | `enableBarCollapsing` | `boolean` | `false` | Collapse toolbar on scroll. |
-| `ephemeralWebSession` | `boolean` | `false` | `openAuth` only: don't persist cookies/credentials. |
+| `ephemeralWebSession` | `boolean` | `false` | `openAuth` only: do not persist cookies/credentials. |
 | `enableEdgeDismiss` | `boolean` | `true` | Allow swipe-from-edge to dismiss. |
-| `overrideUserInterfaceStyle` | `'unspecified' \| 'light' \| 'dark'` | `'unspecified'` | Force light/dark regardless of system theme. |
-| `formSheetPreferredContentSize` | `{ width, height }` | UIKit | Size when `modalPresentationStyle: 'formSheet'` (iPad). |
+| `overrideUserInterfaceStyle` | `'unspecified' \| 'light' \| 'dark'` | `'unspecified'` | Force light/dark while presented. |
+| `formSheetPreferredContentSize` | `{ width, height }` | UIKit | Preferred form-sheet size. UIKit may adapt or ignore it on iPhone. |
 
 ### Android
 
 | Option | Type | Default | Notes |
 |---|---|---|---|
-| `showTitle` | `boolean` | `false` | Show page title beneath URL bar. |
+| `showTitle` | `boolean` | `false` | Show page title under the URL bar. |
 | `toolbarColor` | `DynamicColor` | browser default | Top toolbar background. |
 | `secondaryToolbarColor` | `DynamicColor` | browser default | Bottom toolbar background. |
 | `navigationBarColor` | `DynamicColor` | system | API 27+. |
@@ -220,31 +220,31 @@ interface InAppBrowserResult {
 | `enableDefaultShare` | `boolean` | `false` | Show share menu item. Use `shareState` for finer control. |
 | `shareState` | `'default' \| 'on' \| 'off'` | `'default'` | Override share menu visibility. |
 | `colorScheme` | `'system' \| 'light' \| 'dark'` | `'system'` | Custom Tab theme hint. |
-| `headers` | `Record<string, string>` | `{}` | HTTP headers on the initial request. |
-| `forceCloseOnRedirection` | `boolean` | `false` | Auto-close tab when redirect URL matches (auth flows). |
-| `hasBackButton` | `boolean` | `false` | Show back arrow instead of "X". |
-| `browserPackage` | `string` | auto | Pin to a specific browser (e.g. `'com.android.chrome'`). |
-| `showInRecents` | `boolean` | `true` | Keep tab in Android Recents after closing. |
-| `includeReferrer` | `boolean` | `false` | Send host app's package as `Referrer`. |
+| `headers` | `Record<string, string>` | `{}` | HTTP headers on initial request. |
+| `forceCloseOnRedirection` | `boolean` | `false` | Auto-close tab when redirect URL matches. |
+| `hasBackButton` | `boolean` | `false` | Show back arrow instead of X. |
+| `browserPackage` | `string` | auto | Pin to a specific browser, e.g. `com.android.chrome`. |
+| `showInRecents` | `boolean` | `true` | Keep the tab in Android Recents after closing. |
+| `includeReferrer` | `boolean` | `false` | Send the host app package as `Referrer`. |
 | `instantAppsEnabled` | `boolean` | `true` | Allow Instant Apps to handle the URL. |
 | `enablePullToRefresh` | `boolean` | `false` | Enable swipe-to-refresh. |
-| `enablePartialCustomTab` | `boolean` | `false` | Show as resizable bottom-sheet (Android 13+). |
+| `enablePartialCustomTab` | `boolean` | `false` | Show a resizable bottom sheet on Android 13+. |
 | `animations` | `BrowserAnimations` | system | Custom enter/exit animation resource names. |
 
 ### Dynamic colors
 
-Color options accept a `DynamicColor` object that adapts to system appearance:
+Color options accept a `DynamicColor` object:
 
 ```ts
 interface DynamicColor {
-  base?: string         // fallback for any mode
-  light?: string        // light mode override
-  dark?: string         // dark mode override
-  highContrast?: string // applied when "Increase Contrast" is enabled (iOS 26+, Android 16+)
+  base?: string // fallback
+  light?: string // light mode
+  dark?: string // dark mode
+  highContrast?: string // increased contrast, where supported
 }
 ```
 
-Each value is a `#RRGGBB` or `#AARRGGBB` hex string. Missing mode-specific values fall back to `base`, then to the system default.
+Each value must be `#RRGGBB` or `#AARRGGBB`. Missing mode-specific values fall back to `base`, then the system default.
 
 ---
 
@@ -252,14 +252,15 @@ Each value is a `#RRGGBB` or `#AARRGGBB` hex string. Missing mode-specific value
 
 ### iOS 26 Liquid Glass
 
-iOS 26 redesigned `SFSafariViewController` around the system **Liquid Glass** material. The toolbar is now a translucent surface that samples content beneath it:
+iOS 26 renders `SFSafariViewController` chrome with system Liquid Glass. Apple controls the final toolbar material, contrast, and legibility:
 
-- `preferredBarTintColor` has **little to no visible effect** on iOS 26.
-- `preferredControlTintColor` is partially overridden by the system's adaptive monochrome treatment — custom tints may render with lower contrast.
+- `preferredBarTintColor` can have little or no visible effect.
+- `preferredControlTintColor` may be adapted by the system.
+- `formSheetPreferredContentSize` is only a UIKit preference and is commonly adapted on iPhone.
 
-This affects every wrapper around `SFSafariViewController`. No public API exists to opt out. The properties are still forwarded for iOS ≤ 18 compatibility.
+The properties are still forwarded for iOS versions and contexts that honor them.
 
-If pixel-exact branding of the chrome matters, consider a `WKWebView`-based component for non-auth flows. **Do not** use `WKWebView` for OAuth — it lacks Safari's process isolation, cookies, and autofill, and many providers forbid it.
+If pixel-exact browser chrome matters, use a `WKWebView`-based screen for non-auth flows. Do not use `WKWebView` for OAuth; it lacks Safari's process isolation, cookie sharing, autofill, and many providers forbid it.
 
 ### Android browser fallback
 

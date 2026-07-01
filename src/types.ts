@@ -123,6 +123,13 @@ export interface InAppBrowserIOSOptions {
    */
   preferredControlTintColor?: DynamicColor
   preferredStatusBarStyle?: StatusBarStyle
+  /**
+   * Ask Safari to enter Reader Mode when the page supports it.
+   *
+   * @platform ios
+   * @remarks Android Custom Tabs do not expose Reader Mode, so Android ignores
+   * this option.
+   */
   readerMode?: boolean
   animated?: boolean
   modalPresentationStyle?: ModalPresentationStyle
