@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -16,6 +15,8 @@ import {
 } from 'react-native-inappbrowser-nitro'
 
 const REPO_URL = 'https://github.com/mCodex/react-native-inappbrowser-nitro'
+const READER_URL =
+  'https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/'
 const AUTH_REDIRECT_URL = 'inappbrowsernitro://callback'
 const AUTH_URL = `https://httpbin.org/redirect-to?url=${encodeURIComponent(AUTH_REDIRECT_URL)}`
 
@@ -28,20 +29,6 @@ const toolbarPalette = {
 const controlPalette = {
   base: '#FFFFFF',
   highContrast: '#FFD700',
-}
-
-const ios26ShowcasePalette = {
-  base: '#F97316',
-  light: '#FDBA74',
-  dark: '#7C3AED',
-  highContrast: '#DC2626',
-}
-
-const ios26ControlPalette = {
-  base: '#0F172A',
-  light: '#1E293B',
-  dark: '#F8FAFC',
-  highContrast: '#0EA5E9',
 }
 
 type ExampleButtonProps = {
@@ -134,7 +121,7 @@ function App(): React.JSX.Element {
 
   const handleOpenReader = useCallback(async () => {
     try {
-      const result = await open(REPO_URL, {
+      const result = await open(READER_URL, {
         readerMode: true,
         enableBarCollapsing: true,
         dismissButtonStyle: 'close',
@@ -144,24 +131,6 @@ function App(): React.JSX.Element {
       })
 
       pushLog(formatResult(result))
-    } catch (err) {
-      pushLog(formatError(err))
-    }
-  }, [open, pushLog])
-
-  const handleOpenIos26Palette = useCallback(async () => {
-    try {
-      const result = await open(REPO_URL, {
-        preferredBarTintColor: ios26ShowcasePalette,
-        preferredControlTintColor: ios26ControlPalette,
-        preferredStatusBarStyle: 'darkContent',
-        overrideUserInterfaceStyle: 'light',
-        dismissButtonStyle: 'done',
-        enableEdgeDismiss: false,
-        formSheetPreferredContentSize: { width: 414, height: 720 },
-      })
-
-      pushLog(`iOS 26 palette • ${formatResult(result)}`)
     } catch (err) {
       pushLog(formatError(err))
     }
@@ -207,7 +176,7 @@ function App(): React.JSX.Element {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>react-native-inappbrowser-nitro</Text>
         <Text style={styles.subtitle}>
-          Nitro-powered in-app browser with iOS 26 & Android 16 features.
+          Nitro-powered Safari and Custom Tabs integration.
         </Text>
 
         <View style={styles.card}>
@@ -226,20 +195,15 @@ function App(): React.JSX.Element {
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Try the Features</Text>
           <ExampleButton
-            label="Open docs with dynamic palette"
+            label="Open repo with platform colors"
             onPress={handleOpenDocs}
             disabled={isSupported === false}
           />
           <ExampleButton
-            label="Open repo in reader mode"
+            label="Open article in reader mode"
             onPress={handleOpenReader}
             disabled={isSupported === false}
             tone="secondary"
-          />
-          <ExampleButton
-            label="Showcase iOS 26 color overrides"
-            onPress={handleOpenIos26Palette}
-            disabled={isSupported === false || Platform.OS !== 'ios'}
           />
           <ExampleButton
             label="Launch auth session (demo)"
@@ -264,10 +228,8 @@ function App(): React.JSX.Element {
             exit.
           </Text>
           <Text style={styles.paragraph}>
-            The showcase button demonstrates the new iOS 26 palette controls,
-            including high-contrast overrides, status bar tinting, and
-            form-sheet sizing. On older iOS versions the system gracefully
-            ignores unsupported keys.
+            iOS 26 Safari chrome uses system-controlled Liquid Glass rendering,
+            so toolbar colors are treated as hints instead of exact branding.
           </Text>
         </View>
 

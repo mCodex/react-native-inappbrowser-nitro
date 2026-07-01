@@ -108,6 +108,8 @@ class HybridInappbrowserNitro : HybridInappbrowserNitroSpec() {
     }
 
     private companion object {
+        // Probe URL to check if any browser can handle HTTP intents.
+        // Domain is irrelevant; example.com is RFC 2606-reserved.
         private const val SCHEME_CHECK_URL = "https://example.com"
     }
 }

@@ -2,7 +2,7 @@
 
 # react-native-inappbrowser-nitro
 
-**A modern, native in-app browser for React Native — built on [Nitro Modules](https://nitro.margelo.com/).**
+**Native in-app browser for React Native, powered by [Nitro Modules](https://nitro.margelo.com/).**
 
 [![npm version](https://img.shields.io/npm/v/react-native-inappbrowser-nitro?style=flat-square&color=0a7ea4)](https://www.npmjs.com/package/react-native-inappbrowser-nitro)
 [![npm downloads](https://img.shields.io/npm/dm/react-native-inappbrowser-nitro?style=flat-square&color=0a7ea4)](https://www.npmjs.com/package/react-native-inappbrowser-nitro)
@@ -15,7 +15,6 @@
 [**Quick start**](#quick-start) ·
 [**API**](#api) ·
 [**Options**](#options) ·
-[**Migration**](#migrating-from-react-native-inappbrowser-reborn) ·
 [**FAQ**](#faq) ·
 [**Changelog**](./CHANGELOG.md)
 
@@ -25,16 +24,16 @@
 
 ---
 
-## ✨ Why this library?
+## ⚡ Why this library?
 
 | | |
 |---|---|
-| ⚡ **Native speed** | Direct JSI bindings via Nitro Modules — no JSON bridge, no scheduler hops. |
-| 🎯 **Right primitive on each platform** | `SFSafariViewController` on iOS, Chrome **Custom Tabs** on Android — not a `WKWebView` reimplementation. |
-| 🔐 **OAuth-ready** | First-class `openAuth` flow with ephemeral sessions and redirect interception. |
-| 🪝 **Hook + imperative APIs** | `useInAppBrowser()` for component state, named exports for everything else. |
-| 🧩 **Strict TypeScript** | Discriminated result types, dual `as const` + literal-type enums, full JSDoc with examples. |
-| 📦 **Small footprint** | `"sideEffects": false`, ESM-first build, lazy-initialized native module. |
+| ⚡ **JSI bindings** | Direct native calls through Nitro Modules. No JSON serialization, no scheduler hops. |
+| 🎯 **Right primitive per platform** | `SFSafariViewController` on iOS, Chrome Custom Tabs on Android. Not a `WKWebView` reimplementation. |
+| 🔐 **OAuth built in** | `openAuth` wraps `ASWebAuthenticationSession` with ephemeral sessions and redirect interception. |
+| 🪝 **Hook + functions** | `useInAppBrowser()` for React state, named exports for everything else. |
+| 🧩 **TypeScript first** | Discriminated result types, `as const` enums, full JSDoc. |
+| 📦 **Tree-shakeable** | `"sideEffects": false`, ESM build, lazy native module init. |
 
 ---
 
@@ -48,7 +47,7 @@
 | `react-native-nitro-modules` | `0.35` | `0.35.4` |
 
 > [!IMPORTANT]
-> This library requires the **React Native New Architecture** and is **not compatible with Expo Go**. It works in [Expo prebuild / dev clients](https://docs.expo.dev/develop/development-builds/introduction/).
+> This library requires the **React Native New Architecture** and does **not** work in Expo Go. Use [Expo prebuild / dev clients](https://docs.expo.dev/develop/development-builds/introduction/) instead.
 
 ---
 
@@ -77,21 +76,21 @@ cd ios && pod install
 
 ### Android
 
-Autolinking handles everything. No manual `MainApplication` edits required.
+Autolinking handles everything. No manual `MainApplication` edits.
 
 > [!NOTE]
-> If you have ProGuard/R8 enabled (release builds), add the following rule to `android/app/proguard-rules.pro` to prevent the native Nitro class from being stripped:
+> Release builds with ProGuard/R8 need this rule in `android/app/proguard-rules.pro`:
 > ```pro
 > # react-native-inappbrowser-nitro
 > -keep class com.inappbrowsernitro.** { *; }
 > ```
-> Without this, release builds may crash with `Couldn't find class 'com/inappbrowsernitro/HybridInappbrowserNitro'`.
+> Without it, you'll see `Couldn't find class 'com/inappbrowsernitro/HybridInappbrowserNitro'`.
 
 ---
 
 ## 🚀 Quick start
 
-### React hook
+### Hook
 
 ```tsx
 import { useInAppBrowser } from 'react-native-inappbrowser-nitro/hooks'
@@ -111,17 +110,17 @@ function DocsButton() {
 }
 ```
 
-The hook handles `isLoading` / `error` state, is **safe to call after unmount** (state updates are guarded), and returns stable `open`/`openAuth` references via `useCallback` so it's safe to put them in effect dependency arrays.
+The hook guards state updates after unmount and returns stable `open`/`openAuth` references via `useCallback`.
 
-### Imperative API
+### Imperative
 
 ```tsx
 import { isAvailable, open } from 'react-native-inappbrowser-nitro'
 
 if (await isAvailable()) {
   const result = await open('https://github.com', {
-    preferredBarTintColor:     { light: '#FFFFFF', dark: '#000000' }, // iOS
-    toolbarColor:              { light: '#FFFFFF', dark: '#000000' }, // Android
+    preferredBarTintColor: { light: '#FFFFFF', dark: '#000000' }, // iOS
+    toolbarColor: { light: '#FFFFFF', dark: '#000000' },         // Android
     readerMode: true,
   })
 
@@ -131,7 +130,7 @@ if (await isAvailable()) {
 }
 ```
 
-### OAuth / SSO with `openAuth`
+### OAuth / SSO
 
 ```tsx
 import { openAuth } from 'react-native-inappbrowser-nitro'
@@ -140,15 +139,15 @@ const result = await openAuth(
   'https://example.com/oauth/authorize?client_id=…&redirect_uri=myapp%3A%2F%2Fcb',
   'myapp://cb',
   {
-    ephemeralWebSession: true,   // iOS: don't share cookies with Safari
-    enableEdgeDismiss: false,    // iOS: disable swipe-to-dismiss while authing
-    forceCloseOnRedirection: true, // Android: close tab once redirect is hit
+    ephemeralWebSession: true,       // iOS: don't share Safari cookies
+    enableEdgeDismiss: false,        // iOS: block swipe-to-dismiss during auth
+    forceCloseOnRedirection: true,   // Android: close tab on redirect match
   }
 )
 
 if (result.type === 'success' && result.url) {
   const code = new URL(result.url).searchParams.get('code')
-  // …exchange the code for a token
+  // exchange code for token
 }
 ```
 
@@ -162,7 +161,7 @@ All exports come from the package root unless noted. Every function returns a `P
 |---|---|---|
 | `isAvailable` | `() => Promise<boolean>` | `true` when a compliant Safari/Custom Tabs runtime is reachable. Always `true` on iOS; on Android requires a Custom Tabs–capable browser. |
 | `open` | `(url, options?) => Promise<InAppBrowserResult>` | Present an in-app browser. Resolves when the user dismisses or the system closes it. |
-| `openAuth` | `(url, redirectUrl, options?) => Promise<InAppBrowserAuthResult>` | Run an authentication session that resolves the moment the native runtime intercepts a navigation matching `redirectUrl`. |
+| `openAuth` | `(url, redirectUrl, options?) => Promise<InAppBrowserAuthResult>` | Run an authentication session. Resolves the moment native code intercepts a navigation matching `redirectUrl`. |
 | `close` | `() => Promise<void>` | Dismiss the current browser. No-op when none is presented. |
 | `closeAuth` | `() => Promise<void>` | Cancel an in-flight `openAuth` session. |
 | `useInAppBrowser` | `() => UseInAppBrowserReturn` | Hook wrapping `open`/`openAuth` with `isLoading` + `error` state. Exported from `react-native-inappbrowser-nitro/hooks`. |
@@ -181,31 +180,26 @@ interface InAppBrowserResult {
 
 ### Errors
 
-`open` and `openAuth` reject with an `Error` when:
-
-- the URL is empty, missing a scheme, or
-- the URL uses a denied scheme (`javascript:`, `data:`, `vbscript:`).
-
-These are sanity checks performed in JS before the call ever crosses JSI.
+`open` and `openAuth` reject with an `Error` when the URL is empty, missing a scheme, or uses a denied scheme (`javascript:`, `data:`, `vbscript:`). These checks run in JS before the call crosses JSI.
 
 ---
 
 ## ⚙️ Options
 
-`open` and `openAuth` accept a single options object that aggregates every iOS and Android knob. **Cross-platform fields** apply everywhere; **`@platform` fields** are silently ignored on the other platform.
+`open` and `openAuth` accept a single options object. Cross-platform fields apply everywhere; `@platform` fields are silently ignored on the other platform.
 
 ### iOS
 
 | Option | Type | Default | Notes |
 |---|---|---|---|
 | `dismissButtonStyle` | `'done' \| 'close' \| 'cancel'` | `'done'` | Toolbar dismiss button label. |
-| `preferredBarTintColor` | `DynamicColor` | system | Toolbar background. **iOS 26 limitation:** see [iOS 26 Liquid Glass](#ios-26-liquid-glass). |
-| `preferredControlTintColor` | `DynamicColor` | system | Toolbar button tint. **iOS 26 limitation:** see below. |
+| `preferredBarTintColor` | `DynamicColor` | system | Toolbar background. **iOS 26:** see [Liquid Glass](#ios-26-liquid-glass). |
+| `preferredControlTintColor` | `DynamicColor` | system | Toolbar button tint. **iOS 26:** see below. |
 | `preferredStatusBarStyle` | `'default' \| 'lightContent' \| 'darkContent'` | system | Status bar appearance while presented. |
 | `readerMode` | `boolean` | `false` | Open in Safari Reader Mode if the page supports it. |
 | `animated` | `boolean` | `true` | Animate present/dismiss. |
 | `modalPresentationStyle` | `ModalPresentationStyle` | `'automatic'` | UIKit modal style. |
-| `modalTransitionStyle` | `ModalTransitionStyle` | `'coverVertical'` | UIKit transition (use `'partialCurl'` only with `'fullScreen'`). |
+| `modalTransitionStyle` | `ModalTransitionStyle` | `'coverVertical'` | UIKit transition. Use `'partialCurl'` only with `'fullScreen'`. |
 | `modalEnabled` | `boolean` | `true` | Present modally vs. push onto navigation stack. |
 | `enableBarCollapsing` | `boolean` | `false` | Collapse toolbar on scroll. |
 | `ephemeralWebSession` | `boolean` | `false` | `openAuth` only: don't persist cookies/credentials. |
@@ -250,7 +244,7 @@ interface DynamicColor {
 }
 ```
 
-Each value is a `#RRGGBB` or `#AARRGGBB` hex string. If a mode-specific value is missing, the platform falls back to `base`, then to the system default.
+Each value is a `#RRGGBB` or `#AARRGGBB` hex string. Missing mode-specific values fall back to `base`, then to the system default.
 
 ---
 
@@ -258,34 +252,34 @@ Each value is a `#RRGGBB` or `#AARRGGBB` hex string. If a mode-specific value is
 
 ### iOS 26 Liquid Glass
 
-iOS 26 redesigned `SFSafariViewController` around the system **Liquid Glass** material. The toolbar is now a translucent surface that samples content beneath it, so:
+iOS 26 redesigned `SFSafariViewController` around the system **Liquid Glass** material. The toolbar is now a translucent surface that samples content beneath it:
 
 - `preferredBarTintColor` has **little to no visible effect** on iOS 26.
 - `preferredControlTintColor` is partially overridden by the system's adaptive monochrome treatment — custom tints may render with lower contrast.
 
-This is a platform behavior change that affects every wrapper around `SFSafariViewController`. There is no public API to opt out of the glass material. The properties are still forwarded for iOS ≤ 18 compatibility.
+This affects every wrapper around `SFSafariViewController`. No public API exists to opt out. The properties are still forwarded for iOS ≤ 18 compatibility.
 
-If pixel-exact branding of the chrome is critical, consider a `WKWebView`-based component for non-auth flows. **Do not** use `WKWebView` for OAuth — it does not share Safari's process isolation, cookies, or autofill, and many providers explicitly forbid it.
+If pixel-exact branding of the chrome matters, consider a `WKWebView`-based component for non-auth flows. **Do not** use `WKWebView` for OAuth — it lacks Safari's process isolation, cookies, and autofill, and many providers forbid it.
 
 ### Android browser fallback
 
-Android prefers Chrome Custom Tabs when available. On devices without a Custom Tabs–capable browser the system surfaces a chooser via `Intent.ACTION_VIEW`, and option fields like `toolbarColor` are silently ignored.
+Android prefers Chrome Custom Tabs. On devices without a Custom Tabs–capable browser the system shows a chooser via `Intent.ACTION_VIEW`, and option fields like `toolbarColor` are silently ignored.
 
 ---
 
 ## ❓ FAQ
 
 <details>
-<summary><strong>Why not just use <code>WKWebView</code> / <code>react-native-webview</code>?</strong></summary>
+<summary><strong>Why not use <code>WKWebView</code> / <code>react-native-webview</code>?</strong></summary>
 
-`SFSafariViewController` and Chrome Custom Tabs share the system Safari/Chrome session — including cookies, autofill, content blockers, and (critically) password autofill from iCloud Keychain / Google Password Manager. They also run in a separate process from your app, so the host app cannot read page content. This is exactly what most OAuth providers require. A `WKWebView` cannot offer any of that.
+`SFSafariViewController` and Chrome Custom Tabs share the system Safari/Chrome session — cookies, autofill, content blockers, and password autofill from iCloud Keychain / Google Password Manager. They run in a separate process from your app, so the host app cannot read page content. Most OAuth providers require this. `WKWebView` offers none of it.
 
 </details>
 
 <details>
 <summary><strong>Does it work with Expo?</strong></summary>
 
-Yes — in [Expo prebuild / dev client](https://docs.expo.dev/develop/development-builds/introduction/) projects. It does **not** work in Expo Go (managed workflow) because Nitro requires native compilation.
+Yes, in [Expo prebuild / dev client](https://docs.expo.dev/develop/development-builds/introduction/) projects. It does **not** work in Expo Go (managed workflow) because Nitro requires native compilation.
 
 </details>
 
@@ -299,21 +293,21 @@ No. Nitro Modules require the New Architecture (`newArchEnabled=true` on Android
 <details>
 <summary><strong>"InAppBrowser is not available" on Android emulator</strong></summary>
 
-The default Android emulator image often ships without a Custom Tabs–capable browser. Install Chrome from the Play Store image, or use a Pixel system image with Play Services preinstalled.
+The default emulator image ships without a Custom Tabs–capable browser. Install Chrome from the Play Store image, or use a Pixel system image with Play Services preinstalled.
 
 </details>
 
 <details>
-<summary><strong>Why does my OAuth flow open in Safari on iOS instead of in-app?</strong></summary>
+<summary><strong>Why does my OAuth flow open in Safari instead of in-app?</strong></summary>
 
-You're probably calling `open` instead of `openAuth`. `openAuth` uses `ASWebAuthenticationSession`, which is the only iOS API allowed to intercept a redirect URL programmatically. `open` uses `SFSafariViewController`, which can't do that.
+You're calling `open` instead of `openAuth`. `openAuth` uses `ASWebAuthenticationSession`, the only iOS API that can intercept a redirect URL programmatically. `open` uses `SFSafariViewController`, which cannot.
 
 </details>
 
 <details>
-<summary><strong>Result <code>type</code> is <code>'dismiss'</code> right after I call <code>open</code>. Why?</strong></summary>
+<summary><strong>Result <code>type</code> is <code>'dismiss'</code> right after I call <code>open</code></strong></summary>
 
-Most often this means the URL was rejected by the JS-side validator (empty / missing scheme / denied scheme). Check `result.message` for the reason. Logs from the native side are also visible in Xcode / Logcat.
+The URL was rejected by the JS-side validator (empty / missing scheme / denied scheme). Check `result.message` for the reason. Native-side logs are also visible in Xcode / Logcat.
 
 </details>
 
@@ -321,7 +315,7 @@ Most often this means the URL was rejected by the JS-side validator (empty / mis
 
 ## 🤝 Contributing
 
-Contributions are very welcome. The library is small and well-tested — a great place to land your first React Native PR.
+Contributions welcome. The library is small and well-tested — a good place to land your first React Native PR.
 
 Found a bug or have a feature request? [Open an issue](https://github.com/mCodex/react-native-inappbrowser-nitro/issues/new/choose).
 

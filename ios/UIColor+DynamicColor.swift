@@ -4,10 +4,10 @@ extension UIColor {
   static func from(dynamicColor: DynamicColor?) -> UIColor? {
     guard let dynamicColor else { return nil }
 
-    let base = dynamicColor.base?.nitroColor
-    let light = dynamicColor.light?.nitroColor
-    let dark = dynamicColor.dark?.nitroColor
-    let highContrast = dynamicColor.highContrast?.nitroColor
+    let base = dynamicColor.base?.toUIColor
+    let light = dynamicColor.light?.toUIColor
+    let dark = dynamicColor.dark?.toUIColor
+    let highContrast = dynamicColor.highContrast?.toUIColor
 
     if #available(iOS 13.0, *), (light != nil || dark != nil || highContrast != nil) {
       return UIColor { traits in
@@ -28,8 +28,10 @@ extension UIColor {
 }
 
 private extension String {
-  var nitroColor: UIColor? {
-    var sanitized = nitroTrimmedNonEmpty ?? ""
+  var toUIColor: UIColor? {
+    var sanitized = trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !sanitized.isEmpty else { return nil }
+
     if sanitized.hasPrefix("#") {
       sanitized.removeFirst()
     }
