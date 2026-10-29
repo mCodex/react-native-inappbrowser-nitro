@@ -117,11 +117,11 @@
     "babel-plugin-react-compiler": "^19.1.0-rc.3",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
-    "nitrogen": "0.36.1",
+    "nitrogen": "0.37.1",
     "react": "19.2.7",
     "react-native": "0.86",
     "react-native-builder-bob": "^0.43.0",
-    "react-native-nitro-modules": "0.36.1",
+    "react-native-nitro-modules": "0.37.1",
     "release-it": "^20.2.1",
     "typescript": "^6.0.3"
   },
