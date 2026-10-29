@@ -14,7 +14,7 @@
     "@react-native/new-app-screen": "0.86.0",
     "react": "19.2.7",
     "react-native": "0.86.0",
-    "react-native-nitro-modules": "0.36.1",
+    "react-native-nitro-modules": "0.37.1",
     "react-native-safe-area-context": "^5.8.0"
   },
   "devDependencies": {
