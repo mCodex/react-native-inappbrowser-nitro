@@ -17,7 +17,7 @@
   },
   "hooks": {
     "before:init": ["yarn lint", "yarn typecheck"],
-    "before:release": "yarn codegen"
+    "before:release": ["yarn format CHANGELOG.md", "yarn codegen"]
   },
   "plugins": {
     "@release-it/conventional-changelog": {
