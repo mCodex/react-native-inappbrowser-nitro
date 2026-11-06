@@ -1,6 +1,6 @@
 // src/types.ts
 //
-// Enum-like constants exported as both frozen `as const` values AND matching
+// Enum-like constants exported as `as const` values AND matching
 // string-literal types. Type-only imports tree-shake the runtime const out
 // thanks to `"sideEffects": false` on the package.
 

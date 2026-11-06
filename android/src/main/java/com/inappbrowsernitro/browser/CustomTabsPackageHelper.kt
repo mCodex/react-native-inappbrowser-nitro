@@ -1,32 +1,21 @@
 package com.inappbrowsernitro.browser
 
 import android.content.Context
-import android.content.pm.PackageManager
+import android.content.Intent
 import androidx.browser.customtabs.CustomTabsClient
+import androidx.browser.customtabs.CustomTabsService
 
 internal object CustomTabsPackageHelper {
   fun resolvePackage(context: Context, preferred: String?): String? {
     if (!preferred.isNullOrBlank()) {
-      return preferred
+      return CustomTabsClient.getPackageName(context, listOf(preferred), true)
     }
 
-    val chromePackage = "com.android.chrome"
-    if (isPackageInstalled(context, chromePackage)) {
-      return chromePackage
-    }
+    val serviceIntent = Intent(CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION)
+    val providers = context.packageManager.queryIntentServices(serviceIntent, 0)
+      .mapNotNull { it.serviceInfo?.packageName }
+      .distinct()
 
-    return CustomTabsClient.getPackageName(context, null)
-  }
-
-  @Suppress("DEPRECATION")
-  private fun isPackageInstalled(context: Context, packageName: String): Boolean {
-    return try {
-      context.packageManager.getPackageInfo(packageName, 0)
-      true
-    } catch (_: PackageManager.NameNotFoundException) {
-      false
-    } catch (_: Exception) {
-      false
-    }
+    return CustomTabsClient.getPackageName(context, providers)
   }
 }

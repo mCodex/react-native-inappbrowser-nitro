@@ -71,8 +71,10 @@ export const useInAppBrowser = (): UseInAppBrowserReturn => {
   // Guard against "state update on unmounted component" warnings when an
   // in-flight open/openAuth resolves after the consumer unmounts.
   const isMountedRef = useRef(true)
+
   useEffect(() => {
     isMountedRef.current = true
+
     return () => {
       isMountedRef.current = false
     }
@@ -84,11 +86,14 @@ export const useInAppBrowser = (): UseInAppBrowserReturn => {
         setIsLoading(true)
         setError(null)
       }
+
       try {
         return await fn()
       } catch (err) {
         const next = toError(err)
+
         if (isMountedRef.current) setError(next)
+
         throw next
       } finally {
         if (isMountedRef.current) setIsLoading(false)

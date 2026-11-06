@@ -12,18 +12,14 @@ import android.os.Build
 import android.os.Bundle
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.browser.customtabs.CustomTabsSession
 import com.margelo.nitro.inappbrowsernitro.BrowserAnimations
 import com.margelo.nitro.inappbrowsernitro.BrowserColorScheme
 import com.margelo.nitro.inappbrowsernitro.BrowserShareState
 import com.margelo.nitro.inappbrowsernitro.InAppBrowserOptions
 
-internal class CustomTabsIntentFactory(
-  private val context: Context,
-  private val session: CustomTabsSession?
-) {
+internal class CustomTabsIntentFactory(private val context: Context) {
   fun create(options: InAppBrowserOptions?): CustomTabsIntent {
-    val builder = session?.let { CustomTabsIntent.Builder(it) } ?: CustomTabsIntent.Builder()
+    val builder = CustomTabsIntent.Builder()
 
     applyColors(builder, options)
     applyBehaviours(builder, options)

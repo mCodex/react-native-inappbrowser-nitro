@@ -14,13 +14,16 @@ const trimStringValues = (
   obj: Record<string, unknown>
 ): Record<string, string> => {
   const next: Record<string, string> = {}
+
   for (const key of Object.keys(obj)) {
     const val = obj[key]
+
     if (typeof val === 'string') {
       const trimmed = val.trim()
       if (trimmed) next[key] = trimmed
     }
   }
+
   return next
 }
 
@@ -36,6 +39,7 @@ const sanitizeHeaders = (
 
     const trimmedKey = key.trim()
     const trimmedValue = value.trim()
+
     if (trimmedKey && trimmedValue) {
       result[trimmedKey] = trimmedValue
     }
@@ -58,6 +62,7 @@ export const normalizeOptions = (
   for (const key of Object.keys(options) as (keyof InAppBrowserOptions &
     string)[]) {
     const value = options[key]
+
     if (value === undefined || value === null) continue
 
     if (key === 'headers') {
@@ -65,22 +70,17 @@ export const normalizeOptions = (
       if (Object.keys(result).length > 0) {
         ;(cleaned as Record<string, unknown>)[key] = result
       }
+
       continue
     }
 
-    if (COLOR_KEYS.has(key)) {
+    if (COLOR_KEYS.has(key) || key === 'animations') {
       const result = trimStringValues(value as Record<string, unknown>)
-      if (Object.keys(result).length > 0) {
-        ;(cleaned as Record<string, unknown>)[key] = result
-      }
-      continue
-    }
 
-    if (key === 'animations') {
-      const result = trimStringValues(value as Record<string, unknown>)
       if (Object.keys(result).length > 0) {
         ;(cleaned as Record<string, unknown>)[key] = result
       }
+
       continue
     }
 

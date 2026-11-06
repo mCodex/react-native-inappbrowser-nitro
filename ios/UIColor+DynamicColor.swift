@@ -14,6 +14,7 @@ extension UIColor {
         if traits.accessibilityContrast == .high, let highContrast {
           return highContrast
         }
+
         switch traits.userInterfaceStyle {
         case .dark:
           return dark ?? base ?? light ?? UIColor.label
@@ -30,6 +31,7 @@ extension UIColor {
 private extension String {
   var toUIColor: UIColor? {
     var sanitized = trimmingCharacters(in: .whitespacesAndNewlines)
+
     guard !sanitized.isEmpty else { return nil }
 
     if sanitized.hasPrefix("#") {
@@ -48,6 +50,7 @@ private extension String {
     }
 
     var value: UInt64 = 0
+
     guard Scanner(string: sanitized).scanHexInt64(&value) else {
       return nil
     }

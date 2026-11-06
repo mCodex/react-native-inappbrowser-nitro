@@ -6,8 +6,13 @@ final class SafariPresenter: NSObject {
   private var delegate: SafariDismissDelegate?
 
   @MainActor
-  func present(urlString: String, options: InAppBrowserOptions?) -> InAppBrowserResult {
-    guard let url = URL(string: urlString) else {
+  func present(
+    urlString: String,
+    options: InAppBrowserOptions?
+  ) -> InAppBrowserResult {
+    guard let url = URL(string: urlString),
+          ["http", "https"].contains(url.scheme?.lowercased() ?? ""),
+          url.host != nil, url.user == nil, url.password == nil else {
       return InAppBrowserResult(type: .dismiss, url: nil, message: "invalid url")
     }
 
@@ -104,6 +109,7 @@ final class SafariPresenter: NSObject {
 
     if let transition = options?.modalTransitionStyle {
       controller.modalTransitionStyle = transition.toUIKit
+
       if transition == .partialcurl {
         controller.modalPresentationStyle = .fullScreen
       }

@@ -17,6 +17,7 @@ export const validateUrl = (candidate: unknown): string => {
   }
 
   const schemeMatch = SCHEME_PATTERN.exec(trimmed)
+
   if (schemeMatch === null) {
     throw new Error('URL must include a valid URI scheme (e.g. https://).')
   }
@@ -30,4 +31,34 @@ export const validateUrl = (candidate: unknown): string => {
   }
 
   return trimmed
+}
+
+/** Initial browser pages must use the schemes supported by Safari and Custom Tabs. */
+export const validateBrowserUrl = (candidate: unknown): string => {
+  const url = validateUrl(candidate)
+
+  for (let index = 0; index < url.length; index += 1) {
+    const code = url.charCodeAt(index)
+
+    if (code <= 32 || code === 127) {
+      throw new Error(
+        'Browser URL must not contain whitespace or control characters.'
+      )
+    }
+  }
+
+  const parsed = new URL(url)
+
+  if (
+    !['http:', 'https:'].includes(parsed.protocol) ||
+    !parsed.hostname ||
+    parsed.username ||
+    parsed.password
+  ) {
+    throw new Error(
+      'Browser URL must be an HTTP(S) URL without embedded credentials.'
+    )
+  }
+
+  return url
 }

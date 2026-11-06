@@ -8,26 +8,40 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/android-build.yml'
-      - 'example/android/**'
-      - 'nitrogen/generated/shared/**'
-      - 'nitrogen/generated/android/**'
-      - 'cpp/**'
-      - 'android/**'
-      - '**/yarn.lock'
-      - '**/react-native.config.js'
-      - '**/nitro.json'
+      - ".github/workflows/android-build.yml"
+      - "src/**"
+      - "tests/**"
+      - "**/package.json"
+      - "tsconfig.json"
+      - "babel.config.js"
+      - "biome.json"
+      - "post-script.js"
+      - "example/android/**"
+      - "nitrogen/generated/shared/**"
+      - "nitrogen/generated/android/**"
+      - "cpp/**"
+      - "android/**"
+      - "**/yarn.lock"
+      - "**/react-native.config.js"
+      - "**/nitro.json"
   pull_request:
     paths:
-      - '.github/workflows/android-build.yml'
-      - 'example/android/**'
-      - '**/nitrogen/generated/shared/**'
-      - '**/nitrogen/generated/android/**'
-      - 'cpp/**'
-      - 'android/**'
-      - '**/yarn.lock'
-      - '**/react-native.config.js'
-      - '**/nitro.json'
+      - ".github/workflows/android-build.yml"
+      - "src/**"
+      - "tests/**"
+      - "**/package.json"
+      - "tsconfig.json"
+      - "babel.config.js"
+      - "biome.json"
+      - "post-script.js"
+      - "example/android/**"
+      - "**/nitrogen/generated/shared/**"
+      - "**/nitrogen/generated/android/**"
+      - "cpp/**"
+      - "android/**"
+      - "**/yarn.lock"
+      - "**/react-native.config.js"
+      - "**/nitro.json"
   workflow_dispatch:
 
 concurrency:
@@ -46,11 +60,14 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: '24'
-          cache: 'yarn'
+          node-version: "24"
+          cache: "yarn"
 
       - name: Install dependencies (yarn)
         run: yarn install --immutable
+
+      - name: Test JavaScript behavior
+        run: yarn test
 
       - name: Generate Nitro bindings
         run: yarn codegen
@@ -58,9 +75,9 @@ jobs:
       - name: Setup JDK 21
         uses: actions/setup-java@v5
         with:
-          distribution: 'zulu'
-          java-version: '21'
-          cache: 'gradle'
+          distribution: "zulu"
+          java-version: "21"
+          cache: "gradle"
 
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -74,7 +91,7 @@ jobs:
 
       - name: Run Gradle build
         working-directory: example/android
-        run: ./gradlew assembleDebug --no-daemon --build-cache
+        run: ./gradlew assembleDebug :react-native-inappbrowser-nitro:testDebugUnitTest --no-daemon --build-cache
 
       - name: Stop Gradle daemon
         working-directory: example/android
