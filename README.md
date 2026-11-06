@@ -1,235 +1,261 @@
-<div align="center">
-
 # react-native-inappbrowser-nitro
 
-**Native in-app browser for React Native, powered by [Nitro Modules](https://nitro.margelo.com/).**
+Native browser presentation through [Nitro Modules](https://nitro.margelo.com/): Safari on iOS, Custom Tabs on Android, and a separate authentication API.
 
-[![npm version](https://img.shields.io/npm/v/react-native-inappbrowser-nitro?style=flat-square&color=0a7ea4)](https://www.npmjs.com/package/react-native-inappbrowser-nitro)
-[![npm downloads](https://img.shields.io/npm/dm/react-native-inappbrowser-nitro?style=flat-square&color=0a7ea4)](https://www.npmjs.com/package/react-native-inappbrowser-nitro)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/react-native-inappbrowser-nitro?style=flat-square&label=min%2Bgzip)](https://bundlephobia.com/package/react-native-inappbrowser-nitro)
-[![license](https://img.shields.io/npm/l/react-native-inappbrowser-nitro?style=flat-square&color=0a7ea4)](./LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/mCodex/react-native-inappbrowser-nitro/ios-build.yml?style=flat-square&label=iOS)](https://github.com/mCodex/react-native-inappbrowser-nitro/actions/workflows/ios-build.yml)
-[![CI](https://img.shields.io/github/actions/workflow/status/mCodex/react-native-inappbrowser-nitro/android-build.yml?style=flat-square&label=Android)](https://github.com/mCodex/react-native-inappbrowser-nitro/actions/workflows/android-build.yml)
+[![npm](https://img.shields.io/npm/v/react-native-inappbrowser-nitro)](https://www.npmjs.com/package/react-native-inappbrowser-nitro)
+[![license](https://img.shields.io/npm/l/react-native-inappbrowser-nitro)](./LICENSE)
 
-[**Installation**](#installation) ·
-[**Quick start**](#quick-start) ·
-[**API**](#api) ·
-[**Options**](#options) ·
-[**FAQ**](#faq) ·
-[**Changelog**](./CHANGELOG.md)
+[Install](#installation) · [Expo](#expo-development-and-production-builds) · [Usage](#usage) · [API](#api) · [Options](#options)
 
-<img src="./app.gif" alt="Demo" width="280" />
-
-</div>
-
----
-
-## ⚡ Why this library?
-
-| | |
-|---|---|
-| ⚡ **JSI bindings** | Direct native calls through Nitro Modules. No JSON serialization, no scheduler hops. |
-| 🎯 **Right primitive per platform** | `SFSafariViewController` on iOS, Chrome Custom Tabs on Android. Not a `WKWebView` reimplementation. |
-| 🔐 **OAuth built in** | `openAuth` wraps `ASWebAuthenticationSession` with ephemeral sessions and redirect interception. |
-| 🪝 **Hook + functions** | `useInAppBrowser()` for React state, named exports for everything else. |
-| 🧩 **TypeScript first** | Discriminated result types, `as const` enums, full JSDoc. |
-| 📦 **Tree-shakeable** | `"sideEffects": false`, ESM build, lazy native module init. |
-
----
-
-## 📋 Requirements
-
-| | Minimum | Tested up to |
-|---|---|---|
-| React Native | `0.75` (New Architecture) | `0.85` |
-| iOS | `15.1` | `26.2` |
-| Android | API `23` (Android 6) | API `36` (Android 16) |
-| `react-native-nitro-modules` | `0.35` | `0.35.4` |
+<img src="https://raw.githubusercontent.com/mCodex/react-native-inappbrowser-nitro/main/app.gif" alt="In-app browser example" width="280" />
 
 > [!IMPORTANT]
-> This library requires the **React Native New Architecture** and does **not** work in Expo Go. Use [Expo prebuild / dev clients](https://docs.expo.dev/develop/development-builds/introduction/) instead.
+> Use a native iOS or Android build. Expo Go, web and server rendering cannot run this native module. The example targets React Native 0.88.1 and Nitro 0.37.2; those dependency versions alone do not establish compatibility with every host app or Expo SDK.
 
----
-
-## 📦 Installation
+## Installation
 
 ```sh
 yarn add react-native-inappbrowser-nitro react-native-nitro-modules
 ```
 
-<details>
-<summary><strong>npm / pnpm / bun</strong></summary>
+Install pods for iOS, using the Ruby setup of your app:
 
 ```sh
-npm install react-native-inappbrowser-nitro react-native-nitro-modules
-pnpm add react-native-inappbrowser-nitro react-native-nitro-modules
-bun add react-native-inappbrowser-nitro react-native-nitro-modules
+cd ios
+bundle exec pod install
 ```
 
-</details>
+React Native autolinking handles native registration. Android release keep rules ship with the library. Rebuild your app after installing or upgrading native dependencies. The Android library requires API 24 or later; iOS deployment requirements also depend on the React Native version in your app.
 
-### iOS
+### Expo development and production builds
+
+Install versions compatible with your Expo SDK:
 
 ```sh
-cd ios && pod install
+npx expo install react-native-inappbrowser-nitro react-native-nitro-modules expo-dev-client
+npx expo install --check
 ```
 
-### Android
+Tested with Expo 58.0.23, React Native 0.88.1 and Nitro 0.37.2 in an app installed from the packed library. Android debug and R8 release builds passed. Expo iOS generation and autolinking passed; Expo iOS compilation has not been checked.
 
-Autolinking handles everything. No manual `MainApplication` edits.
+Expo SDKs select their own React Native versions. Resolve version conflicts before compiling; upgrading this library's example does not upgrade an Expo project.
+
+For a custom OAuth callback, configure a scheme owned by your app:
+
+```json
+{
+  "expo": {
+    "name": "Browser example",
+    "slug": "browser-example",
+    "scheme": "myapp",
+    "ios": { "bundleIdentifier": "com.example.browser" },
+    "android": { "package": "com.example.browser" }
+  }
+}
+```
+
+The callback for the examples below is `myapp://oauth/callback`. Register the same URI with your identity provider. Expo generates native scheme registration from this configuration. No library-specific config plugin is required.
+
+Build locally:
+
+```sh
+npx expo run:ios
+npx expo run:android
+npx expo start --dev-client
+```
+
+For EAS, configure your project and add development and production profiles:
+
+```sh
+npx eas-cli@latest login
+npx eas-cli@latest build:configure
+```
+
+```json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "production": {}
+  }
+}
+```
+
+```sh
+npx eas-cli@latest build --profile development --platform android
+npx eas-cli@latest build --profile production --platform all
+```
+
+A development build includes the native module and connects to Metro. A production build bundles the app for distribution. iOS device distribution requires Apple signing setup; use a separate profile with `ios.simulator: true` for simulator builds. Store submission is a separate step. See [Expo development builds](https://docs.expo.dev/develop/development-builds/introduction/) and [EAS setup](https://docs.expo.dev/build/setup/).
 
 > [!NOTE]
-> Release builds with ProGuard/R8 need this rule in `android/app/proguard-rules.pro`:
-> ```pro
-> # react-native-inappbrowser-nitro
-> -keep class com.inappbrowsernitro.** { *; }
-> ```
-> Without it, you'll see `Couldn't find class 'com/inappbrowsernitro/HybridInappbrowserNitro'`.
+> Native dependency, URL scheme, associated-domain and manifest changes require a new binary. EAS Update cannot add them. `expo prebuild --clean` regenerates native projects and removes manual native edits; keep app configuration in Expo config or a host-owned config plugin.
 
----
+### Android callback setup
 
-## 🚀 Quick start
+Auth Tab handles callbacks through an Activity Result when the selected browser supports it. The Custom Tabs fallback receives callbacks through your host activity. Keep the activity in `singleTask` mode and register your app scheme. Expo normally generates this setup; inspect the merged manifest after prebuild.
 
-### Hook
+For a bare app, the relevant parts of `AndroidManifest.xml` are:
+
+```xml
+<activity
+  android:name=".MainActivity"
+  android:exported="true"
+  android:launchMode="singleTask">
+  <intent-filter>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="myapp" android:host="oauth" android:path="/callback" />
+  </intent-filter>
+</activity>
+```
+
+If you override `onNewIntent`, forward it to React Native through the superclass. HTTPS callbacks additionally require verified Android App Links; configure the host app and domain association. iOS Universal Links require associated domains, but verified HTTPS auth callback support is still deferred in this library's iOS adapter. Use a registered custom scheme there.
+
+## Usage
+
+```ts
+import { open } from 'react-native-inappbrowser-nitro'
+
+const result = await open('https://example.com', {
+  preferredBarTintColor: { base: '#FFFFFF', dark: '#111111' },
+  toolbarColor: { base: '#FFFFFF', dark: '#111111' },
+})
+```
+
+`open` resolves when presentation or launch succeeds. It does not wait for dismissal or report subsequent navigation. A successful result normally contains the requested URL.
+
+### React hook
 
 ```tsx
+import { Pressable, Text } from 'react-native'
 import { useInAppBrowser } from 'react-native-inappbrowser-nitro/hooks'
 
-function DocsButton() {
+export function BrowserButton() {
   const { open, isLoading, error } = useInAppBrowser()
 
   return (
-    <Pressable
-      disabled={isLoading}
-      onPress={() => open('https://nitro.margelo.com')}
-    >
-      <Text>{isLoading ? 'Opening…' : 'Open docs'}</Text>
-      {error && <Text style={{ color: 'red' }}>{error.message}</Text>}
-    </Pressable>
+    <>
+      <Pressable
+        disabled={isLoading}
+        onPress={() => {
+          void open('https://example.com').catch(() => {})
+        }}
+      >
+        <Text>{isLoading ? 'Opening…' : 'Open website'}</Text>
+      </Pressable>
+      {error && <Text accessibilityRole="alert">{error.message}</Text>}
+    </>
   )
 }
 ```
 
-The hook guards state updates after unmount and returns stable `open`/`openAuth` references via `useCallback`.
+The hook exposes stable callbacks, loading state and the last thrown error. Handle rejected promises even when displaying `error`. Avoid overlapping calls: loading uses one Boolean and may clear before another call finishes.
 
-### Imperative
-
-```tsx
-import { isAvailable, open } from 'react-native-inappbrowser-nitro'
-
-if (await isAvailable()) {
-  const result = await open('https://github.com', {
-    preferredBarTintColor: { light: '#FFFFFF', dark: '#000000' }, // iOS
-    toolbarColor: { light: '#FFFFFF', dark: '#000000' },         // Android
-    readerMode: true,
-  })
-
-  if (result.type === 'success') {
-    console.log('Opened', result.url)
-  }
-}
-```
-
-### OAuth / SSO
-
-```tsx
-import { openAuth } from 'react-native-inappbrowser-nitro'
-
-const result = await openAuth(
-  'https://example.com/oauth/authorize?client_id=…&redirect_uri=myapp%3A%2F%2Fcb',
-  'myapp://cb',
-  {
-    ephemeralWebSession: true,       // iOS: don't share Safari cookies
-    enableEdgeDismiss: false,        // iOS: block swipe-to-dismiss during auth
-    forceCloseOnRedirection: true,   // Android: close tab on redirect match
-  }
-)
-
-if (result.type === 'success' && result.url) {
-  const code = new URL(result.url).searchParams.get('code')
-  // exchange code for token
-}
-```
-
----
-
-## 📖 API
-
-All exports come from the package root unless noted. Every function returns a `Promise`.
-
-| Export | Signature | Description |
-|---|---|---|
-| `isAvailable` | `() => Promise<boolean>` | `true` when a compliant Safari/Custom Tabs runtime is reachable. Always `true` on iOS; on Android requires a Custom Tabs–capable browser. |
-| `open` | `(url, options?) => Promise<InAppBrowserResult>` | Present an in-app browser. Resolves when the user dismisses or the system closes it. |
-| `openAuth` | `(url, redirectUrl, options?) => Promise<InAppBrowserAuthResult>` | Run an authentication session. Resolves the moment native code intercepts a navigation matching `redirectUrl`. |
-| `close` | `() => Promise<void>` | Dismiss the current browser. No-op when none is presented. |
-| `closeAuth` | `() => Promise<void>` | Cancel an in-flight `openAuth` session. |
-| `useInAppBrowser` | `() => UseInAppBrowserReturn` | Hook wrapping `open`/`openAuth` with `isLoading` + `error` state. Exported from `react-native-inappbrowser-nitro/hooks`. |
-
-### Result shape
+### Authentication
 
 ```ts
-type BrowserResultType = 'cancel' | 'dismiss' | 'success'
+import { openAuth } from 'react-native-inappbrowser-nitro'
 
-interface InAppBrowserResult {
-  type: BrowserResultType
-  url?: string      // final URL captured by the browser session
-  message?: string  // human-readable reason on `dismiss`
+const redirectUrl = 'myapp://oauth/callback'
+// Build authorizationUrl with your OAuth client, including PKCE and state.
+const result = await openAuth(authorizationUrl, redirectUrl)
+
+if (result.type === 'success' && result.url) {
+  // Give the callback to your OAuth client to validate state and exchange the code.
+} else if (result.type === 'cancel') {
+  // The user or app canceled the session.
+} else {
+  // Presentation, provider or callback verification failed; inspect result.message.
 }
 ```
 
-### Errors
+Android uses Auth Tab when available and a Custom Tabs fallback otherwise. It checks the returned scheme, host, explicit port and encoded path against `redirectUrl`. Configure the redirect without credentials, query parameters or a fragment. The returned callback may contain a query or fragment carrying the authorization response. Custom schemes must be hierarchical, such as `myapp://oauth/callback`.
 
-`open` and `openAuth` reject with an `Error` when the URL is empty, missing a scheme, or uses a denied scheme (`javascript:`, `data:`, `vbscript:`). These checks run in JS before the call crosses JSI.
+`ephemeralWebSession: true` requests an ephemeral authentication session. Android refuses the request when the selected provider lacks that capability. Ordinary `open` does not offer cookie isolation. Browser and OS policies determine cookie behavior; do not assume Safari presentation shares the Safari app's complete cookie store.
 
----
+> [!WARNING]
+> The iOS auth adapter currently matches only the callback scheme and does not prevent overlapping sessions or handle failed starts deterministically. Keep one session active, validate the full callback in your OAuth client and test cancellation on your supported devices.
 
-## ⚙️ Options
+Your OAuth client owns PKCE S256, unpredictable state, nonce validation where applicable, token exchange and secure token storage. A matching redirect URI alone does not authenticate a response.
 
-`open` and `openAuth` accept one options object. Platform-only fields are ignored on the other platform.
+## API
+
+Functions return promises after argument validation; invalid arguments can throw synchronously. Import them from the package root; import the hook from `/hooks`. Public types and enum-like constants are also available from `/types`.
+
+| Function                               | Behavior                                                                                                                                       |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `isAvailable()`                        | iOS returns `true`; Android checks for a Custom Tabs provider or an app that handles HTTPS. This does not prove Auth Tab or ephemeral support. |
+| `open(url, options?)`                  | Launch/present an ordinary browser and return immediately after launch.                                                                        |
+| `openAuth(url, redirectUrl, options?)` | Wait for an authentication callback, cancellation or failure.                                                                                  |
+| `close()`                              | Dismiss ordinary Safari presentation on iOS. Currently a no-op on Android.                                                                     |
+| `closeAuth()`                          | Request cancellation of the current auth session. iOS settlement limitations remain as described above.                                        |
+| `useInAppBrowser()`                    | Return these methods plus `isLoading` and `error`.                                                                                             |
+
+```ts
+interface InAppBrowserResult {
+  type: 'success' | 'cancel' | 'dismiss'
+  url?: string
+  message?: string
+}
+```
+
+`InAppBrowserAuthResult` has the same shape. Native presentation failures usually return `dismiss`; JS validation and module initialization can throw before returning a promise. Use `try/catch` as well as checking `result.type`.
+
+Initial browser URLs must use HTTP(S), include a host and contain no embedded credentials, whitespace or control characters. Prefer HTTPS for authentication. Custom schemes are for callbacks, not the initial page.
+
+## Options
+
+Native browser support varies. Ordinary Safari options generally do not apply to `ASWebAuthenticationSession`. Android Auth Tab also has a smaller option surface than ordinary Custom Tabs; presentation hints are not guaranteed for auth.
+
+<details>
+<summary>iOS, Android and dynamic color reference</summary>
 
 ### iOS
 
-| Option | Type | Default | Notes |
-|---|---|---|---|
-| `dismissButtonStyle` | `'done' \| 'close' \| 'cancel'` | `'done'` | Toolbar dismiss button label. |
-| `preferredBarTintColor` | `DynamicColor` | system | Safari toolbar background hint. iOS 26 Liquid Glass may ignore it. |
-| `preferredControlTintColor` | `DynamicColor` | system | Safari control tint hint. iOS 26 may adapt it for contrast. |
-| `preferredStatusBarStyle` | `'default' \| 'lightContent' \| 'darkContent'` | system | Status bar appearance while presented. |
-| `readerMode` | `boolean` | `false` | iOS only. Ask Safari to enter Reader Mode if the page supports it; Android Custom Tabs ignore this option. |
-| `animated` | `boolean` | `true` | Animate present/dismiss. |
-| `modalPresentationStyle` | `ModalPresentationStyle` | `'automatic'` | UIKit modal style. |
-| `modalTransitionStyle` | `ModalTransitionStyle` | `'coverVertical'` | UIKit transition. Use `'partialCurl'` only with `'fullScreen'`. |
-| `modalEnabled` | `boolean` | `true` | Present modally instead of pushing onto a navigation stack. |
-| `enableBarCollapsing` | `boolean` | `false` | Collapse toolbar on scroll. |
-| `ephemeralWebSession` | `boolean` | `false` | `openAuth` only: do not persist cookies/credentials. |
-| `enableEdgeDismiss` | `boolean` | `true` | Allow swipe-from-edge to dismiss. |
-| `overrideUserInterfaceStyle` | `'unspecified' \| 'light' \| 'dark'` | `'unspecified'` | Force light/dark while presented. |
-| `formSheetPreferredContentSize` | `{ width, height }` | UIKit | Preferred form-sheet size. UIKit may adapt or ignore it on iPhone. |
+| Option                          | Type                                           | Default           | Notes                                                                                                         |
+| ------------------------------- | ---------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------- |
+| `dismissButtonStyle`            | `'done' \| 'close' \| 'cancel'`                | `'done'`          | Toolbar dismiss button label.                                                                                 |
+| `preferredBarTintColor`         | `DynamicColor`                                 | system            | Safari toolbar background hint. iOS 26 Liquid Glass may ignore it.                                            |
+| `preferredControlTintColor`     | `DynamicColor`                                 | system            | Safari control tint hint. iOS 26 may adapt it for contrast.                                                   |
+| `preferredStatusBarStyle`       | `'default' \| 'lightContent' \| 'darkContent'` | system            | Status bar appearance while presented.                                                                        |
+| `readerMode`                    | `boolean`                                      | `false`           | iOS only. Ask Safari to enter Reader Mode if the page supports it; Android Custom Tabs ignore this option.    |
+| `animated`                      | `boolean`                                      | `true`            | Animate present/dismiss.                                                                                      |
+| `modalPresentationStyle`        | `ModalPresentationStyle`                       | `'automatic'`     | UIKit modal style.                                                                                            |
+| `modalTransitionStyle`          | `ModalTransitionStyle`                         | `'coverVertical'` | UIKit transition. Use `'partialCurl'` only with `'fullScreen'`.                                               |
+| `modalEnabled`                  | `boolean`                                      | `true`            | Present modally instead of pushing onto a navigation stack.                                                   |
+| `enableBarCollapsing`           | `boolean`                                      | `false`           | Collapse toolbar on scroll.                                                                                   |
+| `ephemeralWebSession`           | `boolean`                                      | `false`           | `openAuth` only: request an ephemeral session. Android requires provider capability and fails if unavailable. |
+| `enableEdgeDismiss`             | `boolean`                                      | `true`            | Control ordinary Safari presentation dismissal; does not control authentication UI.                           |
+| `overrideUserInterfaceStyle`    | `'unspecified' \| 'light' \| 'dark'`           | `'unspecified'`   | Force light/dark while presented.                                                                             |
+| `formSheetPreferredContentSize` | `{ width, height }`                            | UIKit             | Preferred form-sheet size. UIKit may adapt or ignore it on iPhone.                                            |
 
 ### Android
 
-| Option | Type | Default | Notes |
-|---|---|---|---|
-| `showTitle` | `boolean` | `false` | Show page title under the URL bar. |
-| `toolbarColor` | `DynamicColor` | browser default | Top toolbar background. |
-| `secondaryToolbarColor` | `DynamicColor` | browser default | Bottom toolbar background. |
-| `navigationBarColor` | `DynamicColor` | system | API 27+. |
-| `navigationBarDividerColor` | `DynamicColor` | system | API 28+. |
-| `enableUrlBarHiding` | `boolean` | `false` | Hide URL bar on scroll. |
-| `enableDefaultShare` | `boolean` | `false` | Show share menu item. Use `shareState` for finer control. |
-| `shareState` | `'default' \| 'on' \| 'off'` | `'default'` | Override share menu visibility. |
-| `colorScheme` | `'system' \| 'light' \| 'dark'` | `'system'` | Custom Tab theme hint. |
-| `headers` | `Record<string, string>` | `{}` | HTTP headers on initial request. |
-| `forceCloseOnRedirection` | `boolean` | `false` | Auto-close tab when redirect URL matches. |
-| `hasBackButton` | `boolean` | `false` | Show back arrow instead of X. |
-| `browserPackage` | `string` | auto | Pin to a specific browser, e.g. `com.android.chrome`. |
-| `showInRecents` | `boolean` | `true` | Keep the tab in Android Recents after closing. |
-| `includeReferrer` | `boolean` | `false` | Send the host app package as `Referrer`. |
-| `instantAppsEnabled` | `boolean` | `true` | Allow Instant Apps to handle the URL. |
-| `enablePullToRefresh` | `boolean` | `false` | Enable swipe-to-refresh. |
-| `enablePartialCustomTab` | `boolean` | `false` | Show a resizable bottom sheet on Android 13+. |
-| `animations` | `BrowserAnimations` | system | Custom enter/exit animation resource names. |
+| Option                      | Type                            | Default         | Notes                                                                                               |
+| --------------------------- | ------------------------------- | --------------- | --------------------------------------------------------------------------------------------------- |
+| `showTitle`                 | `boolean`                       | `true`          | Show page title under the URL bar.                                                                  |
+| `toolbarColor`              | `DynamicColor`                  | browser default | Top toolbar background.                                                                             |
+| `secondaryToolbarColor`     | `DynamicColor`                  | browser default | Bottom toolbar background.                                                                          |
+| `navigationBarColor`        | `DynamicColor`                  | system          | API 27+.                                                                                            |
+| `navigationBarDividerColor` | `DynamicColor`                  | system          | API 28+.                                                                                            |
+| `enableUrlBarHiding`        | `boolean`                       | `false`         | Hide URL bar on scroll.                                                                             |
+| `enableDefaultShare`        | `boolean`                       | browser default | `false` disables sharing; `true` keeps browser defaults. Use `shareState: 'on'` to request sharing. |
+| `shareState`                | `'default' \| 'on' \| 'off'`    | `'default'`     | Override share menu visibility.                                                                     |
+| `colorScheme`               | `'system' \| 'light' \| 'dark'` | `'system'`      | Custom Tab theme hint.                                                                              |
+| `headers`                   | `Record<string, string>`        | `{}`            | HTTP headers on initial request.                                                                    |
+| `forceCloseOnRedirection`   | `boolean`                       | `false`         | Legacy field; auth sessions own callback cleanup. Ordinary `open` does not intercept redirects.     |
+| `hasBackButton`             | `boolean`                       | `false`         | Show back arrow instead of X.                                                                       |
+| `browserPackage`            | `string`                        | auto            | Pin to a specific browser, e.g. `com.android.chrome`.                                               |
+| `showInRecents`             | `boolean`                       | `true`          | Keep the tab in Android Recents after closing.                                                      |
+| `includeReferrer`           | `boolean`                       | `false`         | Send the host app package as `Referrer`.                                                            |
+| `instantAppsEnabled`        | `boolean`                       | `true`          | Allow Instant Apps to handle the URL.                                                               |
+| `enablePullToRefresh`       | `boolean`                       | unset           | Known issue: currently enables URL-bar hiding. Do not rely on it for refresh control.               |
+| `enablePartialCustomTab`    | `boolean`                       | `false`         | Request a bottom sheet on API 30+; browser support determines behavior.                             |
+| `animations`                | `BrowserAnimations`             | system          | Custom enter/exit animation resource names.                                                         |
 
 ### Dynamic colors
 
@@ -244,102 +270,27 @@ interface DynamicColor {
 }
 ```
 
-Each value must be `#RRGGBB` or `#AARRGGBB`. Missing mode-specific values fall back to `base`, then the system default.
-
----
-
-## 🔧 Platform notes
-
-### iOS 26 Liquid Glass
-
-iOS 26 renders `SFSafariViewController` chrome with system Liquid Glass. Apple controls the final toolbar material, contrast, and legibility:
-
-- `preferredBarTintColor` can have little or no visible effect.
-- `preferredControlTintColor` may be adapted by the system.
-- `formSheetPreferredContentSize` is only a UIKit preference and is commonly adapted on iPhone.
-
-The properties are still forwarded for iOS versions and contexts that honor them.
-
-If pixel-exact browser chrome matters, use a `WKWebView`-based screen for non-auth flows. Do not use `WKWebView` for OAuth; it lacks Safari's process isolation, cookie sharing, autofill, and many providers forbid it.
-
-### Android browser fallback
-
-Android prefers Chrome Custom Tabs. On devices without a Custom Tabs–capable browser the system shows a chooser via `Intent.ACTION_VIEW`, and option fields like `toolbarColor` are silently ignored.
-
----
-
-## ❓ FAQ
-
-<details>
-<summary><strong>Why not use <code>WKWebView</code> / <code>react-native-webview</code>?</strong></summary>
-
-`SFSafariViewController` and Chrome Custom Tabs share the system Safari/Chrome session — cookies, autofill, content blockers, and password autofill from iCloud Keychain / Google Password Manager. They run in a separate process from your app, so the host app cannot read page content. Most OAuth providers require this. `WKWebView` offers none of it.
+Use `#RRGGBB` or `#AARRGGBB`. Native fallback behavior differs by platform; provide `base` for a predictable fallback. Android does not detect high-contrast mode. Safari tint hints are deprecated on current iOS and may be ignored.
 
 </details>
 
-<details>
-<summary><strong>Does it work with Expo?</strong></summary>
+## Known limits
 
-Yes, in [Expo prebuild / dev client](https://docs.expo.dev/develop/development-builds/introduction/) projects. It does **not** work in Expo Go (managed workflow) because Nitro requires native compilation.
+- Ordinary Android `open` can fall back to a system browser. Browser presentation options do not apply to that fallback. An unavailable explicitly selected provider returns `dismiss`.
+- iOS interactive dismissal can leave retained presentation state; verify dismiss/reopen behavior for the presentation styles your app uses.
+- Custom scheme registration is not exclusive ownership. Use verified HTTPS redirects where supported and always validate OAuth state.
+- Physical devices, foldable layouts and EAS cloud builds still need testing.
 
-</details>
-
-<details>
-<summary><strong>Can I use this with the Old Architecture?</strong></summary>
-
-No. Nitro Modules require the New Architecture (`newArchEnabled=true` on Android, Fabric/TurboModule autolinking on iOS).
-
-</details>
-
-<details>
-<summary><strong>"InAppBrowser is not available" on Android emulator</strong></summary>
-
-The default emulator image ships without a Custom Tabs–capable browser. Install Chrome from the Play Store image, or use a Pixel system image with Play Services preinstalled.
-
-</details>
-
-<details>
-<summary><strong>Why does my OAuth flow open in Safari instead of in-app?</strong></summary>
-
-You're calling `open` instead of `openAuth`. `openAuth` uses `ASWebAuthenticationSession`, the only iOS API that can intercept a redirect URL programmatically. `open` uses `SFSafariViewController`, which cannot.
-
-</details>
-
-<details>
-<summary><strong>Result <code>type</code> is <code>'dismiss'</code> right after I call <code>open</code></strong></summary>
-
-The URL was rejected by the JS-side validator (empty / missing scheme / denied scheme). Check `result.message` for the reason. Native-side logs are also visible in Xcode / Logcat.
-
-</details>
-
----
-
-## 🤝 Contributing
-
-Contributions welcome. The library is small and well-tested — a good place to land your first React Native PR.
-
-Found a bug or have a feature request? [Open an issue](https://github.com/mCodex/react-native-inappbrowser-nitro/issues/new/choose).
+## Contributing
 
 ```sh
-git clone https://github.com/mCodex/react-native-inappbrowser-nitro
-cd react-native-inappbrowser-nitro
 yarn install
-yarn codegen     # regenerate Nitro bindings + build
+yarn codegen
 yarn typecheck
 yarn lint
+yarn test
 ```
 
-Run the example app:
-
-```sh
-cd example
-yarn ios       # or: yarn android
-```
-
-A `pre-commit` hook (Husky + lint-staged + Biome) auto-formats staged files. CI runs on iOS (`macos-26`, Xcode 26.2) and Android (`ubuntu-latest`, JDK 21).
-
----
-
-## 📄 License
+Follow the [native example instructions](https://github.com/mCodex/react-native-inappbrowser-nitro/blob/main/example/README.md) for iOS/Android builds, provider configuration and the local Android auth smoke check. Include the OS version, browser/provider, React Native and Nitro versions when reporting a native issue.
 
 [MIT](./LICENSE) © [Mateus Andrade](https://github.com/mCodex)

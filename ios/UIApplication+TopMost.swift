@@ -13,6 +13,7 @@ extension UIApplication {
     }
 
     var candidate: UIViewController? = root
+
     while let presented = candidate?.presentedViewController {
       candidate = presented
     }

@@ -7,21 +7,24 @@ import type {
   InAppBrowserResult,
 } from '../types'
 import { normalizeOptions } from '../utils/options'
-import { validateUrl } from '../utils/url'
+import { validateBrowserUrl, validateUrl } from '../utils/url'
 
 /** @internal Lazy-initialized JSI hybrid object cache. */
 let _native: InappbrowserNitro | null = null
 
 /**
  * Lazily resolve the Nitro hybrid object. Keeping construction behind a
- * getter avoids any native allocation at module import time, so consumers
- * that only import types pay no startup cost.
+ * getter avoids allocating this library's HybridObject during import.
+ * Nitro's own runtime initialization still runs when its module is imported.
  */
 const getNative = (): InappbrowserNitro => {
   if (_native !== null) return _native
+
   const Ctor =
     getHybridObjectConstructor<InappbrowserNitro>('InappbrowserNitro')
+
   _native = new Ctor()
+
   return _native
 }
 
@@ -29,8 +32,8 @@ const getNative = (): InappbrowserNitro => {
  * Report whether an in-app browser is available on the current device.
  *
  * - On iOS this is always `true`.
- * - On Android it depends on whether a Custom Tabs compatible browser is
- *   installed (Chrome, Samsung Internet, etc.).
+ * - On Android this also accepts a system browser without Custom Tabs.
+ *   Authentication specifically requires a Custom Tabs provider.
  *
  * @example
  * ```ts
@@ -45,11 +48,10 @@ export const isAvailable = (): Promise<boolean> => getNative().isAvailable()
 /**
  * Present an in-app browser for `url` with optional platform configuration.
  *
- * Resolves with the final {@link InAppBrowserResult} once the user dismisses
- * the browser or the system closes it.
+ * Resolves with an {@link InAppBrowserResult} when presentation or launch succeeds.
+ * This does not wait for dismissal or track subsequent navigation.
  *
- * @throws {Error} if `url` is empty, missing a scheme, or uses a denied
- * scheme (`javascript:`, `data:`, `vbscript:`).
+ * @throws {Error} if `url` is not a valid HTTP(S) URL without credentials.
  *
  * @example
  * ```ts
@@ -63,15 +65,18 @@ export const isAvailable = (): Promise<boolean> => getNative().isAvailable()
 export const open = (
   url: string,
   options?: InAppBrowserOptions
-): Promise<InAppBrowserResult> =>
-  getNative().open(validateUrl(url), normalizeOptions(options))
+): Promise<InAppBrowserResult> => {
+  const validatedUrl = validateBrowserUrl(url)
+
+  return getNative().open(validatedUrl, normalizeOptions(options))
+}
 
 /**
  * Launch an authentication session for `url` and resolve when the native
  * runtime intercepts a navigation matching `redirectUrl`.
  *
- * @throws {Error} if either `url` or `redirectUrl` is empty, missing a
- * scheme, or uses a denied scheme.
+ * @throws {Error} for invalid initial URLs or unsafe callback URI schemes.
+ * Android also requires a callback endpoint without a query or fragment.
  *
  * @example
  * ```ts
@@ -86,16 +91,21 @@ export const openAuth = (
   url: string,
   redirectUrl: string,
   options?: InAppBrowserOptions
-): Promise<InAppBrowserAuthResult> =>
-  getNative().openAuth(
-    validateUrl(url),
-    validateUrl(redirectUrl),
+): Promise<InAppBrowserAuthResult> => {
+  const validatedUrl = validateBrowserUrl(url)
+  const validatedRedirect = validateUrl(redirectUrl)
+
+  return getNative().openAuth(
+    validatedUrl,
+    validatedRedirect,
     normalizeOptions(options)
   )
+}
 
 /**
  * Dismiss any currently visible in-app browser opened via {@link open}.
  * No-op when no browser is presented.
+ * Android normal Custom Tabs must be closed by the user; this method is a no-op.
  *
  * @see {@link InappbrowserNitro.close}
  */

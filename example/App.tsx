@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
 import {
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,12 +14,14 @@ import {
   isAvailable,
   useInAppBrowser,
 } from 'react-native-inappbrowser-nitro'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 
 const REPO_URL = 'https://github.com/mCodex/react-native-inappbrowser-nitro'
 const READER_URL =
   'https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/'
 const AUTH_REDIRECT_URL = 'inappbrowsernitro://callback'
-const AUTH_URL = `https://httpbin.org/redirect-to?url=${encodeURIComponent(AUTH_REDIRECT_URL)}`
+// Set your provider's authorization URL with state and a PKCE challenge.
+const AUTH_URL: string = ''
 
 const toolbarPalette = {
   base: '#2563EB',
@@ -65,12 +67,15 @@ const ExampleButton = ({
 
 const formatResult = (result: InAppBrowserResult) => {
   const parts = [`type: ${result.type}`]
+
   if (result.url) {
     parts.push(`url: ${result.url}`)
   }
+
   if (result.message) {
     parts.push(`message: ${result.message}`)
   }
+
   return parts.join(' • ')
 }
 
@@ -78,11 +83,13 @@ const formatError = (err: unknown) => {
   if (err instanceof Error) {
     return `error: ${err.message}`
   }
+
   return `error: ${String(err)}`
 }
 
 function App(): React.JSX.Element {
-  const { open, openAuth, close, isLoading, error } = useInAppBrowser()
+  const { open, openAuth, close, closeAuth, isLoading, error } =
+    useInAppBrowser()
   const [isSupported, setIsSupported] = useState<boolean | null>(null)
   const [log, setLog] = useState<{ id: number; text: string }[]>([])
   const logIdRef = useRef(0)
@@ -138,9 +145,16 @@ function App(): React.JSX.Element {
   }, [open, pushLog])
 
   const handleAuth = useCallback(async () => {
+    if (!AUTH_URL) {
+      pushLog(
+        'Set AUTH_URL in example/App.tsx to your provider’s authorization URL.'
+      )
+      return
+    }
+
     try {
       const result = await openAuth(AUTH_URL, AUTH_REDIRECT_URL, {
-        ephemeralWebSession: true,
+        ephemeralWebSession: Platform.OS === 'ios',
         enableEdgeDismiss: false,
         preferredBarTintColor: toolbarPalette,
         toolbarColor: toolbarPalette,
@@ -162,6 +176,15 @@ function App(): React.JSX.Element {
     }
   }, [close, pushLog])
 
+  const handleCloseAuth = useCallback(async () => {
+    try {
+      await closeAuth()
+      pushLog('closeAuth(): requested cancellation')
+    } catch (err) {
+      pushLog(formatError(err))
+    }
+  }, [closeAuth, pushLog])
+
   const supportCopy = useMemo(() => {
     if (isSupported === null) {
       return 'Checking native availability…'
@@ -173,95 +196,102 @@ function App(): React.JSX.Element {
   }, [isSupported])
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>react-native-inappbrowser-nitro</Text>
-        <Text style={styles.subtitle}>
-          Nitro-powered Safari and Custom Tabs integration.
-        </Text>
-
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Status</Text>
-          <Text style={styles.paragraph}>{supportCopy}</Text>
-          <Text style={styles.paragraph}>
-            Loading: {isLoading ? 'yes' : 'no'}
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <Text style={styles.title}>react-native-inappbrowser-nitro</Text>
+          <Text style={styles.subtitle}>
+            Nitro-powered Safari and Custom Tabs integration.
           </Text>
-          {error && (
-            <Text style={[styles.paragraph, styles.errorText]}>
-              Last error: {error.message}
-            </Text>
-          )}
-        </View>
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Try the Features</Text>
-          <ExampleButton
-            label="Open repo with platform colors"
-            onPress={handleOpenDocs}
-            disabled={isSupported === false}
-          />
-          {Platform.OS === 'ios' && (
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Status</Text>
+            <Text style={styles.paragraph}>{supportCopy}</Text>
+            <Text style={styles.paragraph}>
+              Loading: {isLoading ? 'yes' : 'no'}
+            </Text>
+            {error && (
+              <Text style={[styles.paragraph, styles.errorText]}>
+                Last error: {error.message}
+              </Text>
+            )}
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Try the Features</Text>
             <ExampleButton
-              label="Open article in Reader Mode"
-              onPress={handleOpenReader}
+              label="Open repo with platform colors"
+              onPress={handleOpenDocs}
+              disabled={isSupported === false}
+            />
+            {Platform.OS === 'ios' && (
+              <ExampleButton
+                label="Open article in Reader Mode"
+                onPress={handleOpenReader}
+                disabled={isSupported === false}
+                tone="secondary"
+              />
+            )}
+            <ExampleButton
+              label="Launch configured auth session"
+              onPress={handleAuth}
+              disabled={isSupported === false || isLoading}
+            />
+            <ExampleButton
+              label="Force close"
+              onPress={handleClose}
               disabled={isSupported === false}
               tone="secondary"
             />
-          )}
-          <ExampleButton
-            label="Launch auth session (demo)"
-            onPress={handleAuth}
-            disabled={isSupported === false}
-          />
-          <ExampleButton
-            label="Force close"
-            onPress={handleClose}
-            disabled={isSupported === false}
-            tone="secondary"
-          />
-        </View>
+            <ExampleButton
+              label="Cancel auth session"
+              onPress={handleCloseAuth}
+              disabled={!isLoading}
+              tone="secondary"
+            />
+          </View>
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Security Notes</Text>
-          <Text style={styles.paragraph}>
-            iOS 26 allows blocking swipe-to-dismiss during sensitive auth flows
-            via <Text style={styles.code}>enableEdgeDismiss</Text>. Android 16
-            adds dynamic contrast colors and partial custom tabs; emulators
-            without gesture navigation may require the hardware back button to
-            exit.
-          </Text>
-          <Text style={styles.paragraph}>
-            iOS 26 Safari chrome uses system-controlled Liquid Glass rendering,
-            so toolbar colors are treated as hints instead of exact branding.
-          </Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Recent Results</Text>
-          {log.length === 0 ? (
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Security Notes</Text>
             <Text style={styles.paragraph}>
-              Interact with the buttons above to populate the log.
+              Your OAuth client must validate state and use PKCE. Private auth
+              sessions depend on browser support. The demo only checks redirect
+              delivery; it does not exchange an authorization code.
             </Text>
-          ) : (
-            log.map((entry, index) => (
-              <Text key={entry.id} style={styles.logLine}>
-                {index + 1}. {entry.text}
-              </Text>
-            ))
-          )}
-        </View>
+            <Text style={styles.paragraph}>
+              iOS 26 Safari chrome uses system-controlled Liquid Glass
+              rendering, so toolbar colors are treated as hints instead of exact
+              branding.
+            </Text>
+          </View>
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Update <Text style={styles.code}>AUTH_URL</Text> in{' '}
-            <Text style={styles.code}>example/App.tsx</Text> with your
-            provider&apos;s authorize endpoint and register{' '}
-            <Text style={styles.code}>{AUTH_REDIRECT_URL}</Text> in your native
-            projects to test redirect-based flows.
-          </Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Recent Results</Text>
+            {log.length === 0 ? (
+              <Text style={styles.paragraph}>
+                Interact with the buttons above to populate the log.
+              </Text>
+            ) : (
+              log.map((entry, index) => (
+                <Text key={entry.id} style={styles.logLine}>
+                  {index + 1}. {entry.text}
+                </Text>
+              ))
+            )}
+          </View>
+
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              Update <Text style={styles.code}>AUTH_URL</Text> in{' '}
+              <Text style={styles.code}>example/App.tsx</Text> with your
+              provider&apos;s authorize endpoint and register{' '}
+              <Text style={styles.code}>{AUTH_REDIRECT_URL}</Text> in your
+              native projects to test redirect-based flows.
+            </Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   )
 }
 

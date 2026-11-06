@@ -2,6 +2,7 @@ import AuthenticationServices
 
 final class AuthSessionManager: NSObject {
   private var session: ASWebAuthenticationSession?
+
   // `ASWebAuthenticationSession.presentationContextProvider` is a `weak` reference,
   // so we must retain the provider ourselves for the lifetime of the session.
   // Without this, the provider is deallocated immediately after assignment and
@@ -9,8 +10,14 @@ final class AuthSessionManager: NSObject {
   private var presentationProvider: AuthPresentationContextProvider?
 
   @MainActor
-  func start(urlString: String, redirectUrl: String, options: InAppBrowserOptions?) async -> InAppBrowserAuthResult {
-    guard let url = URL(string: urlString) else {
+  func start(
+    urlString: String,
+    redirectUrl: String,
+    options: InAppBrowserOptions?
+  ) async -> InAppBrowserAuthResult {
+    guard let url = URL(string: urlString),
+          ["http", "https"].contains(url.scheme?.lowercased() ?? ""),
+          url.host != nil, url.user == nil, url.password == nil else {
       return InAppBrowserAuthResult(type: .dismiss, url: nil, message: "invalid url")
     }
 
@@ -18,11 +25,17 @@ final class AuthSessionManager: NSObject {
 
     return await withCheckedContinuation { continuation in
       let provider = AuthPresentationContextProvider()
-      let session = ASWebAuthenticationSession(url: url, callbackURLScheme: callbackScheme) { [weak self] callbackURL, error in
+
+      let session = ASWebAuthenticationSession(
+        url: url,
+        callbackURLScheme: callbackScheme
+      ) { [weak self] callbackURL, error in
         let result = self?.mapAuthResult(callbackURL: callbackURL, error: error) ?? Self.genericFailure
+
         // Release retained refs once the session completes.
         self?.session = nil
         self?.presentationProvider = nil
+
         continuation.resume(returning: result)
       }
 
@@ -32,6 +45,7 @@ final class AuthSessionManager: NSObject {
       // iOS Simulator does not fully emulate Secure Enclave behaviour; expect reduced isolation for ephemeral sessions.
       self.presentationProvider = provider
       self.session = session
+
       session.start()
     }
   }
@@ -45,9 +59,11 @@ final class AuthSessionManager: NSObject {
 
   private func mapAuthResult(callbackURL: URL?, error: Error?) -> InAppBrowserAuthResult {
     if let error {
-      if let authError = error as? ASWebAuthenticationSessionError, authError.code == .canceledLogin {
+      if let authError = error as? ASWebAuthenticationSessionError,
+         authError.code == .canceledLogin {
         return InAppBrowserAuthResult(type: .cancel, url: nil, message: nil)
       }
+
       return InAppBrowserAuthResult(type: .dismiss, url: nil, message: error.localizedDescription)
     }
 

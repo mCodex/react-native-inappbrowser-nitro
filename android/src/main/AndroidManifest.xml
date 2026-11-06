@@ -1,4 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+	<application>
+		<activity
+			android:name="com.inappbrowsernitro.browser.AuthTabActivity"
+			android:exported="false"
+			android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+	</application>
 	<queries>
 		<intent>
 			<action android:name="android.intent.action.VIEW" />

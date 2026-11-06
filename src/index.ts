@@ -5,8 +5,10 @@ export {
   open,
   openAuth,
 } from './core/native'
+
 export type { UseInAppBrowserReturn } from './hooks/useInAppBrowser'
 export { useInAppBrowser } from './hooks/useInAppBrowser'
+
 export type {
   BrowserAnimations,
   DynamicColor,
@@ -17,6 +19,7 @@ export type {
   InAppBrowserOptions,
   InAppBrowserResult,
 } from './types'
+
 export {
   BrowserColorScheme,
   BrowserResultType,

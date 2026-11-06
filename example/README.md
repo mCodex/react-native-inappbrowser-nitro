@@ -1,97 +1,77 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Native example
 
-# Getting Started
+This workspace app targets React Native 0.88.1 and Nitro 0.37.2. It demonstrates browser options and a configurable authentication session. Install Node 24+, the Android SDK/JDK for Android, and Xcode/Ruby/CocoaPods for iOS.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
-
-## Step 1: Start Metro
-
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
-
-To start the Metro dev server, run the following command from the root of your React Native project:
+From the repository root:
 
 ```sh
-# Using npm
-npm start
+yarn install
+yarn codegen
+cd example
+bundle install
+bundle exec pod install --project-directory=ios
+```
 
-# OR using Yarn
+Skip the Ruby/pod commands when building Android only. Start Metro in one terminal:
+
+```sh
+cd example
 yarn start
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+Run the app from another terminal:
 
 ```sh
-# Using npm
-npm run android
-
-# OR using Yarn
+cd example
 yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
+# Or, on macOS:
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## Use your OAuth provider
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+Set `AUTH_URL` in [App.tsx](./App.tsx) to an authorization URL created by your OAuth client, and register `inappbrowsernitro://callback` with your provider. The example leaves the URL empty until configured. Your OAuth client must create and validate state/PKCE and perform token exchange; the example does not implement those steps.
 
-## Step 3: Modify your app
+The app prevents another auth button press while a call is pending. iOS callback-target validation and cancellation/session ownership still have known issues. A successful example build does not establish safe real-provider authentication.
 
-Now that you have successfully run the app, let's make changes!
+## Android local auth smoke check
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+The local fixture exercises native callback delivery without an identity provider or credentials. It uses fixed demo code/state values and does not test OAuth token exchange. Use an Android emulator with a Custom Tabs browser installed.
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+Start the server from the repository root and keep it running:
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+```sh
+node tests/fixtures/auth-server.mjs
+```
 
-## Congratulations! :tada:
+The server listens on `127.0.0.1:8082`; the emulator reaches it at `10.0.2.2:8082`. This HTTP endpoint is a local test fixture. Use HTTPS authorization endpoints in your app.
 
-You've successfully run and modified your React Native App. :partying_face:
+Build the fixture as the release entry point from `example/android`:
 
-### Now what?
+```sh
+cd example/android
+ENTRY_FILE=../tests/fixtures/android-auth-smoke.js ./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a
+adb install -r app/build/outputs/apk/release/app-release.apk
+adb shell am start -n com.inappbrowsernitroexample/.MainActivity
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+`ENTRY_FILE` is resolved against the React Native project root (`example`), so `../tests` refers to the repository fixtures. Use an ABI matching your emulator; the command above targets arm64. Ensure `adb` is on your PATH.
 
-# Troubleshooting
+Run each check after the previous session has finished:
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+| Button         | Action and expected result                                                                                                                                                            |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Start auth     | The app shows `pending` while the browser displays a page. Tap **Complete authentication**. The result should be `success` with `inappbrowsernitro://callback?code=demo&state=smoke`. |
+| Wrong redirect | The server redirects to an unexpected callback host. It must never produce `success`. Auth Tab can return `dismiss`; a Custom Tabs fallback can remain open until cancellation.       |
+| Cancel auth    | The fixture calls `closeAuth()` immediately after `openAuth()` to check call ordering. Expect `cancel`, without completing the page link.                                             |
 
-# Learn More
+These are reproducible checks, not a claim that every browser/provider or lifecycle path has passed. For fallback testing, use a provider without Auth Tab and verify host deep-link forwarding. The fixture does not recover pending sessions after process death.
 
-To learn more about React Native, take a look at the following resources:
+Restore the normal example entry point by building again without the override:
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+```sh
+./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a
+adb install -r app/build/outputs/apk/release/app-release.apk
+```
+
+Stop the fixture server with Ctrl+C when finished. See the root [README](../README.md) for installation/API details.
