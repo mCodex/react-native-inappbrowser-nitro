@@ -36,7 +36,7 @@ npx expo install react-native-inappbrowser-nitro react-native-nitro-modules expo
 npx expo install --check
 ```
 
-A packed consumer was verified with Expo 58.0.23, React Native 0.88.1 and Nitro 0.37.2: Android debug and R8 release builds passed. Expo iOS generation/autolinking passed; Expo iOS compilation remains unverified. See [verification details](https://github.com/mCodex/react-native-inappbrowser-nitro/blob/main/docs/expo-verification.md).
+Tested with Expo 58.0.23, React Native 0.88.1 and Nitro 0.37.2 in an app installed from the packed library. Android debug and R8 release builds passed. Expo iOS generation and autolinking passed; Expo iOS compilation has not been checked.
 
 Expo SDKs select their own React Native versions. Resolve version conflicts before compiling; upgrading this library's example does not upgrade an Expo project.
 
@@ -178,7 +178,7 @@ Android uses Auth Tab when available and a Custom Tabs fallback otherwise. It ch
 `ephemeralWebSession: true` requests an ephemeral authentication session. Android refuses the request when the selected provider lacks that capability. Ordinary `open` does not offer cookie isolation. Browser and OS policies determine cookie behavior; do not assume Safari presentation shares the Safari app's complete cookie store.
 
 > [!WARNING]
-> The iOS auth adapter currently matches only the callback scheme and does not prevent overlapping sessions or handle failed starts deterministically. Keep one session active, validate the full callback in your OAuth client and test cancellation on your supported devices. See the [security review](https://github.com/mCodex/react-native-inappbrowser-nitro/blob/main/docs/security-review.md) for pending fixes.
+> The iOS auth adapter currently matches only the callback scheme and does not prevent overlapping sessions or handle failed starts deterministically. Keep one session active, validate the full callback in your OAuth client and test cancellation on your supported devices.
 
 Your OAuth client owns PKCE S256, unpredictable state, nonce validation where applicable, token exchange and secure token storage. A matching redirect URI alone does not authenticate a response.
 
@@ -279,7 +279,7 @@ Use `#RRGGBB` or `#AARRGGBB`. Native fallback behavior differs by platform; prov
 - Ordinary Android `open` can fall back to a system browser. Browser presentation options do not apply to that fallback. An unavailable explicitly selected provider returns `dismiss`.
 - iOS interactive dismissal can leave retained presentation state; verify dismiss/reopen behavior for the presentation styles your app uses.
 - Custom scheme registration is not exclusive ownership. Use verified HTTPS redirects where supported and always validate OAuth state.
-- No physical-device, foldable, EAS cloud-build or store-release coverage is implied by the example's dependency versions. See [implementation status and verification requirements](https://github.com/mCodex/react-native-inappbrowser-nitro/blob/main/docs/implementation-plan.md).
+- Physical devices, foldable layouts and EAS cloud builds still need testing.
 
 ## Contributing
 
@@ -292,7 +292,5 @@ yarn test
 ```
 
 Follow the [native example instructions](https://github.com/mCodex/react-native-inappbrowser-nitro/blob/main/example/README.md) for iOS/Android builds, provider configuration and the local Android auth smoke check. Include the OS version, browser/provider, React Native and Nitro versions when reporting a native issue.
-
-Nitro calls still allocate and convert typed option structs, and UI presentation must run on the main thread. This package keeps one lazily created native object. There is no measured browser latency or bundle-size advantage claimed here; see [Nitro's performance guidance](https://nitro.margelo.com/docs/guides/performance-tips).
 
 [MIT](./LICENSE) © [Mateus Andrade](https://github.com/mCodex)

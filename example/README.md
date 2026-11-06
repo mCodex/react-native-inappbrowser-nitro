@@ -32,7 +32,7 @@ yarn ios
 
 Set `AUTH_URL` in [App.tsx](./App.tsx) to an authorization URL created by your OAuth client, and register `inappbrowsernitro://callback` with your provider. The example leaves the URL empty until configured. Your OAuth client must create and validate state/PKCE and perform token exchange; the example does not implement those steps.
 
-The app prevents another auth button press while a call is pending. iOS callback-target validation and cancellation/session ownership still have [known issues](../docs/security-review.md). A successful example build does not establish safe real-provider authentication.
+The app prevents another auth button press while a call is pending. iOS callback-target validation and cancellation/session ownership still have known issues. A successful example build does not establish safe real-provider authentication.
 
 ## Android local auth smoke check
 
@@ -59,11 +59,11 @@ adb shell am start -n com.inappbrowsernitroexample/.MainActivity
 
 Run each check after the previous session has finished:
 
-| Button | Action and expected result |
-| --- | --- |
-| Start auth | The app shows `pending` while the browser displays a page. Tap **Complete authentication**. The result should be `success` with `inappbrowsernitro://callback?code=demo&state=smoke`. |
-| Wrong redirect | The server redirects to an unexpected callback host. It must never produce `success`. Auth Tab can return `dismiss`; a Custom Tabs fallback can remain open until cancellation. |
-| Cancel auth | The fixture calls `closeAuth()` after 1.5 seconds. Expect `cancel`, without completing the page link. |
+| Button         | Action and expected result                                                                                                                                                            |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Start auth     | The app shows `pending` while the browser displays a page. Tap **Complete authentication**. The result should be `success` with `inappbrowsernitro://callback?code=demo&state=smoke`. |
+| Wrong redirect | The server redirects to an unexpected callback host. It must never produce `success`. Auth Tab can return `dismiss`; a Custom Tabs fallback can remain open until cancellation.       |
+| Cancel auth    | The fixture calls `closeAuth()` immediately after `openAuth()` to check call ordering. Expect `cancel`, without completing the page link.                                             |
 
 These are reproducible checks, not a claim that every browser/provider or lifecycle path has passed. For fallback testing, use a provider without Auth Tab and verify host deep-link forwarding. The fixture does not recover pending sessions after process death.
 
@@ -74,4 +74,4 @@ Restore the normal example entry point by building again without the override:
 adb install -r app/build/outputs/apk/release/app-release.apk
 ```
 
-Stop the fixture server with Ctrl+C when finished. See the root [README](../README.md) for installation/API details and the [implementation record](../docs/implementation-plan.md) for build evidence and remaining checks.
+Stop the fixture server with Ctrl+C when finished. See the root [README](../README.md) for installation/API details.
